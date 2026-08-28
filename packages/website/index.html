@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FastVibe | From zero to AI-ready in one click</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Geist:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "primary-container": "#b76dff",
+        "on-surface": "#e2e2e8",
+        "surface-container": "#1e2024",
+        "error": "#ffb4ab",
+        "on-primary-container": "#400071",
+        "outline-variant": "#4d4354",
+        "inverse-surface": "#e2e2e8",
+        "surface-tint": "#ddb7ff",
+        "on-secondary-container": "#00424e",
+        "primary": "#ddb7ff",
+        "on-secondary": "#003640",
+        "surface-container-lowest": "#0c0e12",
+        "tertiary": "#4edea3",
+        "surface-container-low": "#1a1c20",
+        "background": "#111318",
+        "inverse-on-surface": "#2f3035",
+        "surface": "#111318",
+        "secondary": "#4cd7f6",
+        "on-surface-variant": "#cfc2d6",
+        "inverse-primary": "#842bd2",
+        "on-error-container": "#ffdad6",
+        "secondary-fixed-dim": "#4cd7f6",
+        "primary-fixed": "#f0dbff",
+        "on-secondary-fixed-variant": "#004e5c",
+        "surface-variant": "#333539",
+        "surface-bright": "#37393e",
+        "surface-container-high": "#282a2e",
+        "outline": "#988d9f",
+        "on-background": "#e2e2e8",
+        "surface-dim": "#111318",
+        "primary-fixed-dim": "#ddb7ff",
+        "secondary-container": "#03b5d3",
+        "on-primary": "#490080",
+        "surface-container-highest": "#333539"
+      },
+      "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+      "spacing": {
+        "gutter": "24px", "margin-desktop": "48px", "margin-mobile": "16px",
+        "container-max": "1280px", "base": "4px"
+      },
+      "fontFamily": {
+        "body-lg": ["Inter"], "headline-md-mobile": ["Geist"], "code-md": ["JetBrains Mono"],
+        "body-md": ["Inter"], "label-caps": ["JetBrains Mono"], "display-lg": ["Geist"], "headline-md": ["Geist"]
+      },
+      "fontSize": {
+        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+        "code-md": ["14px", {"lineHeight": "20px", "fontWeight": "450"}],
+        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+      }
+    }
+  }
+}
+</script>
+<style>
+body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
+.glass { background: rgba(15, 18, 25, 0.4); backdrop-filter: blur(20px); border: 1px solid rgba(152, 141, 159, 0.1); }
+.glass-dark { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.05); }
+.glow-primary { box-shadow: 0 0 30px rgba(168, 85, 247, 0.15); }
+.glow-cyan { box-shadow: 0 0 30px rgba(76, 215, 246, 0.15); }
+.reveal-on-scroll { opacity: 0; transform: translateY(30px); transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1); }
+.reveal-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+#hero-three-container { position: absolute; top: 0; right: 0; width: 60%; height: 100%; z-index: -1; opacity: 0.8; mask-image: radial-gradient(circle at center, black 0%, transparent 80%); }
+
+/* Tool selector */
+.tool-item { cursor: pointer; transition: all 0.2s; }
+.tool-item:hover { border-color: rgba(221, 183, 255, 0.3); }
+.tool-item.selected { border-color: #ddb7ff; background: rgba(221, 183, 255, 0.08); }
+.tool-desc { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.tool-desc.open { max-height: 200px; }
+.cart-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 6px; }
+
+/* Dropdown */
+.agent-dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 8px; min-width: 220px; opacity: 0; visibility: hidden; transition: all 0.2s; }
+.agent-dropdown.open { opacity: 1; visibility: visible; }
+
+/* Quiz */
+.quiz-option { cursor: pointer; transition: all 0.2s; }
+.quiz-option:hover { border-color: rgba(76, 215, 246, 0.4); }
+.quiz-option.selected { border-color: #4cd7f6; background: rgba(76, 215, 246, 0.08); }
+
+/* Flow */
+.flow-line-progress { animation: flow-dash 3s linear infinite; background-size: 200% 100%; }
+@keyframes flow-dash { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.flow-step { transition: transform 0.3s ease; }
+.flow-step:hover { transform: translateY(-4px); }
+
+/* Scrollbar */
+.custom-scroll::-webkit-scrollbar { width: 4px; }
+.custom-scroll::-webkit-scrollbar-track { background: transparent; }
+.custom-scroll::-webkit-scrollbar-thumb { background: #333539; border-radius: 4px; }
+</style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container">
+
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-background/30 backdrop-blur-xl border-b border-white/5">
+<div class="flex justify-between items-center max-w-container-max mx-auto px-margin-desktop h-20">
+<div class="font-display-lg text-[28px] md:text-display-lg font-black tracking-tighter text-primary">FastVibe</div>
+<nav class="hidden md:flex items-center gap-12">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-all duration-300" href="#stacks">Stacks</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-all duration-300" href="#picker">Picker</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-all duration-300" href="#flow">Flow</a>
+</nav>
+<div class="flex items-center gap-6">
+<a href="https://github.com/fastvibe/fastvibe" class="hidden sm:block text-on-surface/80 font-medium hover:text-white transition-all">GitHub</a>
+</div>
+</div>
+</header>
+
+<main>
+<!-- Hero -->
+<section class="relative px-margin-mobile md:px-margin-desktop min-h-screen flex items-center overflow-hidden">
+<div id="hero-three-container"></div>
+<div class="relative z-10 max-w-container-max mx-auto w-full">
+<div class="max-w-4xl space-y-10">
+<h1 class="font-display-lg text-[64px] md:text-[110px] leading-[0.9] font-black tracking-tighter text-on-surface">
+  From zero to <br/>
+  <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary via-primary to-secondary bg-[length:200%_auto] animate-gradient-x">AI-ready</span> <br/>
+  in one click.
+</h1>
+<p class="text-body-lg md:text-[24px] leading-relaxed text-on-surface-variant max-w-2xl opacity-80">
+  The fastest way to start vibe coding. Un solo comando curl instala todo tu entorno de desarrollo — lenguajes, AI tools, MCPs, IDEs y project templates.
+</p>
+<!-- Terminal -->
+<div class="mt-16 max-w-2xl rounded-2xl glass-dark overflow-hidden border border-white/10 glow-cyan transition-all hover:border-secondary/40">
+<div class="bg-white/5 px-5 py-3 flex items-center justify-between border-b border-white/5">
+<div class="flex gap-2">
+<div class="w-3 h-3 rounded-full bg-error/40"></div>
+<div class="w-3 h-3 rounded-full bg-primary/40"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary/40"></div>
+</div>
+<span class="font-label-caps text-[10px] tracking-widest text-on-surface-variant opacity-40 uppercase">vibecoder — todo incluido</span>
+<div class="w-12"></div>
+</div>
+<div class="p-8 text-left font-code-md text-lg flex items-center justify-between group hero-terminal">
+<code class="text-secondary/90">
+<span class="text-tertiary">curl</span> https://fastvibe.dev/install | <span class="text-primary">bash</span>
+</code>
+<button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')">
+<span class="material-symbols-outlined text-[24px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Hint outside terminal -->
+<div class="mt-6 text-center">
+  <span class="text-white/70 text-sm font-code-md">─ o elige un stack específico abajo ─</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Problem vs Solution -->
+<section class="py-40 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto reveal-on-scroll">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch">
+<div class="glass p-12 rounded-[2rem] flex flex-col justify-between border-error/10 bg-error/5 group transition-all hover:bg-error/[0.08]">
+<div>
+<div class="text-error font-label-caps mb-6 uppercase tracking-[0.2em] font-bold">The Pain</div>
+<h2 class="font-headline-md text-headline-md md:text-[40px] text-on-surface mb-8">Manual Chaos</h2>
+<ul class="space-y-6 text-on-surface-variant/80">
+<li class="flex items-center gap-4"><span class="material-symbols-outlined text-error text-[24px]">close</span><span>2–8 hours of manual dependency hell</span></li>
+<li class="flex items-center gap-4"><span class="material-symbols-outlined text-error text-[24px]">close</span><span>Conflicting Python/Node versions</span></li>
+<li class="flex items-center gap-4"><span class="material-symbols-outlined text-error text-[24px]">close</span><span>Debugging missing MCP connector keys</span></li>
+<li class="flex items-center gap-4"><span class="material-symbols-outlined text-error text-[24px]">close</span><span>Manual PATH configuration errors</span></li>
+</ul>
+</div>
+<div class="mt-12 pt-12 border-t border-white/5 opacity-50 group-hover:opacity-100 transition-opacity">
+<div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-error w-[85%]"></div></div>
+<p class="mt-4 font-label-caps text-[10px] text-error tracking-widest uppercase">Energy Depleted</p>
+</div>
+</div>
+<div class="glass p-12 rounded-[2rem] flex flex-col justify-between border-primary/20 bg-primary/5 group relative overflow-hidden transition-all hover:bg-primary/[0.08]">
+<div class="absolute -right-32 -top-32 w-80 h-80 bg-primary/10 blur-[120px] rounded-full"></div>
+<div>
+<div class="text-primary font-label-caps mb-6 uppercase tracking-[0.2em] font-bold">The Solution</div>
+<h2 class="font-headline-md text-headline-md md:text-[40px] text-on-surface mb-8">FastVibe Flow</h2>
+<ul class="space-y-6 text-on-surface">
+<li class="flex items-center gap-4"><span class="material-symbols-outlined text-tertiary text-[24px]">check_circle</span><span>10-minute fully automated setup</span></li>
+<li class="flex items-center gap-4"><span class="material-symbols-outlined text-tertiary text-[24px]">check_circle</span><span>Isolated environments with uv, pipx</span></li>
+<li class="flex items-center gap-4"><span class="material-symbols-outlined text-tertiary text-[24px]">check_circle</span><span>Pre-configured AI agent ecosystem</span></li>
+<li class="flex items-center gap-4"><span class="material-symbols-outlined text-tertiary text-[24px]">check_circle</span><span>Unified curl-to-bash orchestration</span></li>
+</ul>
+</div>
+<div class="mt-12 pt-12 border-t border-white/10">
+<div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-primary w-[15%]"></div></div>
+<p class="mt-4 font-label-caps text-[10px] text-primary tracking-widest uppercase">Energy Saved</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Stacks Section -->
+<section id="stacks" class="py-40 px-margin-mobile md:px-margin-desktop bg-surface-container-lowest/20 reveal-on-scroll">
+<div class="max-w-container-max mx-auto text-center mb-20">
+<h2 class="font-display-lg text-[48px] md:text-[64px] text-on-surface mb-6 font-black tracking-tight">Select your Stack</h2>
+<p class="text-on-surface-variant text-xl max-w-2xl mx-auto opacity-70">Cada stack se instala con un solo comando curl. Copia y pega, o pídeselo a tu agente de IA.</p>
+</div>
+
+<div class="max-w-container-max mx-auto space-y-6">
+  <!-- Vibecoder -->
+  <div class="glass p-8 md:p-10 rounded-[2rem] border-primary/30 glow-primary relative overflow-hidden group">
+    <div class="absolute -right-20 -top-20 w-60 h-60 bg-primary/5 blur-[100px] rounded-full"></div>
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <div class="flex-1">
+        <div class="flex items-center gap-4 mb-3">
+          <span class="font-label-caps text-[10px] text-primary font-bold uppercase tracking-[0.2em] bg-primary/10 px-3 py-1 rounded-full">Default</span>
+          <span class="material-symbols-outlined text-primary text-2xl">rocket_launch</span>
+        </div>
+        <h3 class="font-headline-md text-3xl text-on-surface mb-2">Vibecoder</h3>
+        <p class="text-on-surface-variant/80 text-body-md max-w-xl">Todo incluido. Lenguajes, AI tools, MCPs, IDEs, skills. Nunca sabes lo que vas a necesitar.</p>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">Python</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">Node</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">Go</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">Rust</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">Java</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">Bun</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">Claude Code</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">Ollama</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">Docker</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">VS Code</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">Cursor</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">MCPs</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full text-on-surface-variant/70">+14 más</span>
+        </div>
+      </div>
+      <div class="flex-shrink-0 w-full lg:w-auto">
+        <div class="glass-dark rounded-xl border border-white/10 p-4 font-code-md text-sm flex items-center justify-between gap-4">
+          <code class="text-secondary/80 whitespace-nowrap">curl <span class="text-tertiary">https://fastvibe.dev/install</span> | bash</code>
+          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')">
+            <span class="material-symbols-outlined text-[20px]">content_copy</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Engineer -->
+  <div class="glass p-8 md:p-10 rounded-[2rem] border-white/5 hover:border-secondary/30 transition-all group">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <div class="flex-1">
+        <div class="flex items-center gap-4 mb-3"><span class="material-symbols-outlined text-secondary text-2xl">psychology</span></div>
+        <h3 class="font-headline-md text-2xl text-on-surface mb-2">AI Engineer</h3>
+        <p class="text-on-surface-variant/70 text-body-md">Entorno completo para AI development con LLMs locales, coding assistants y MCPs.</p>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Python</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Node</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Ollama</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Claude Code</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Cursor</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Docker</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Gemini CLI</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">MCPs</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Git</span>
+        </div>
+      </div>
+      <div class="flex-shrink-0 w-full lg:w-auto">
+        <div class="glass-dark rounded-xl border border-white/10 p-4 font-code-md text-sm flex items-center justify-between gap-4">
+          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.dev/install/ai-engineer</span> | bash</code>
+          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install/ai-engineer | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Frontend -->
+  <div class="glass p-8 md:p-10 rounded-[2rem] border-white/5 hover:border-primary/30 transition-all group">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <div class="flex-1">
+        <div class="flex items-center gap-4 mb-3"><span class="material-symbols-outlined text-primary text-2xl">palette</span></div>
+        <h3 class="font-headline-md text-2xl text-on-surface mb-2">Frontend</h3>
+        <p class="text-on-surface-variant/70 text-body-md">Modern frontend development con React, Next.js, Tailwind y las mejores herramientas.</p>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Node</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">pnpm</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Bun</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">VS Code</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Cursor</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Git</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">yarn</span>
+        </div>
+      </div>
+      <div class="flex-shrink-0 w-full lg:w-auto">
+        <div class="glass-dark rounded-xl border border-white/10 p-4 font-code-md text-sm flex items-center justify-between gap-4">
+          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.dev/install/frontend</span> | bash</code>
+          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install/frontend | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Agent Builder -->
+  <div class="glass p-8 md:p-10 rounded-[2rem] border-white/5 hover:border-error/30 transition-all group">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <div class="flex-1">
+        <div class="flex items-center gap-4 mb-3"><span class="material-symbols-outlined text-error text-2xl">smart_toy</span></div>
+        <h3 class="font-headline-md text-2xl text-on-surface mb-2">AI Agent Builder</h3>
+        <p class="text-on-surface-variant/70 text-body-md">Construye agentes con LangGraph, FastAPI, Playwright, Docker y tooling MCP.</p>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Python</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Node</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Docker</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Claude Code</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Ollama</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">MCPs</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Git</span>
+        </div>
+      </div>
+      <div class="flex-shrink-0 w-full lg:w-auto">
+        <div class="glass-dark rounded-xl border border-white/10 p-4 font-code-md text-sm flex items-center justify-between gap-4">
+          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.dev/install/ai-agent-builder</span> | bash</code>
+          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install/ai-agent-builder | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Science -->
+  <div class="glass p-8 md:p-10 rounded-[2rem] border-white/5 hover:border-tertiary/30 transition-all group">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <div class="flex-1">
+        <div class="flex items-center gap-4 mb-3"><span class="material-symbols-outlined text-tertiary text-2xl">analytics</span></div>
+        <h3 class="font-headline-md text-2xl text-on-surface mb-2">Data Science</h3>
+        <p class="text-on-surface-variant/70 text-body-md">Data science y análisis con Python, Jupyter, Polars, DuckDB y visualización.</p>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Python</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">uv</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Jupyter</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Ollama</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">Docker</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">VS Code</span>
+          <span class="text-[11px] font-code-md bg-white/5 px-3 py-1.5 rounded-full">MCPs</span>
+        </div>
+      </div>
+      <div class="flex-shrink-0 w-full lg:w-auto">
+        <div class="glass-dark rounded-xl border border-white/10 p-4 font-code-md text-sm flex items-center justify-between gap-4">
+          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.dev/install/data-science</span> | bash</code>
+          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install/data-science | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backend + DevOps grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="glass p-8 rounded-[2rem] border-white/5 hover:border-white/20 transition-all group">
+      <div class="flex items-center gap-4 mb-3"><span class="material-symbols-outlined text-on-surface-variant text-2xl">dns</span></div>
+      <h3 class="font-headline-md text-xl text-on-surface mb-2">Backend</h3>
+      <p class="text-on-surface-variant/70 text-sm mb-4">Node.js, Python, Go, Rust, Docker, PostgreSQL</p>
+      <div class="glass-dark rounded-xl border border-white/10 p-3 font-code-md text-xs flex items-center justify-between gap-2">
+        <code class="text-secondary/70 truncate">curl <span class="text-tertiary">https://fastvibe.dev/install/backend</span> | bash</code>
+        <button class="text-on-surface-variant/40 hover:text-primary transition-all" onclick="copyToClipboard('curl https://fastvibe.dev/install/backend | bash')"><span class="material-symbols-outlined text-[18px]">content_copy</span></button>
+      </div>
+    </div>
+    <div class="glass p-8 rounded-[2rem] border-white/5 hover:border-white/20 transition-all group">
+      <div class="flex items-center gap-4 mb-3"><span class="material-symbols-outlined text-on-surface-variant text-2xl">cloud</span></div>
+      <h3 class="font-headline-md text-xl text-on-surface mb-2">DevOps</h3>
+      <p class="text-on-surface-variant/70 text-sm mb-4">Docker, Git, GitHub CLI, Python, Node, Go</p>
+      <div class="glass-dark rounded-xl border border-white/10 p-3 font-code-md text-xs flex items-center justify-between gap-2">
+        <code class="text-secondary/70 truncate">curl <span class="text-tertiary">https://fastvibe.dev/install/devops</span> | bash</code>
+        <button class="text-on-surface-variant/40 hover:text-primary transition-all" onclick="copyToClipboard('curl https://fastvibe.dev/install/devops | bash')"><span class="material-symbols-outlined text-[18px]">content_copy</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Divider + Picker link -->
+  <div class="text-center pt-8">
+    <span class="text-white/70 text-sm font-code-md">─ o selecciona solo lo que ocupes ─</span>
+  </div>
+</div>
+</section>
+
+<!-- Tool Picker Section -->
+<section id="picker" class="py-40 px-margin-mobile md:px-margin-desktop reveal-on-scroll">
+<div class="max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-display-lg text-[48px] md:text-[56px] text-on-surface mb-6 font-black tracking-tight">Arma tu stack <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">a medida</span></h2>
+<p class="text-on-surface-variant text-xl max-w-xl mx-auto opacity-70">Seleccioná las herramientas que necesitás. Cada una tiene una explicación de para qué sirve.</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <!-- Left: Tool list -->
+  <div class="lg:col-span-2 glass rounded-[2rem] p-6 md:p-8 border-white/5">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="font-headline-md text-xl text-on-surface">Herramientas disponibles</h3>
+      <span class="text-xs text-on-surface-variant/50 font-code-md" id="tool-count">34 herramientas</span>
+    </div>
+    <div class="space-y-2 max-h-[500px] overflow-y-auto custom-scroll pr-2" id="tool-list">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+
+  <!-- Right: Cart -->
+  <div class="glass rounded-[2rem] p-6 md:p-8 border-white/5 flex flex-col">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="font-headline-md text-xl text-on-surface">Tu selección</h3>
+      <span class="text-xs text-on-surface-variant/50 font-code-md" id="cart-count">0</span>
+    </div>
+    <div class="flex-1 min-h-[300px]" id="cart-empty">
+      <div class="flex flex-col items-center justify-center h-full text-on-surface-variant/40 py-16">
+        <span class="material-symbols-outlined text-4xl mb-4">shopping_cart</span>
+        <p class="text-sm">Seleccioná herramientas de la lista</p>
+      </div>
+    </div>
+    <div id="cart-items" class="space-y-1 mb-4 hidden max-h-[350px] overflow-y-auto custom-scroll"></div>
+    <div id="cart-actions" class="hidden space-y-3 pt-4 border-t border-white/5">
+      <div class="glass-dark rounded-xl p-3 font-code-md text-xs break-all" id="cart-url">
+        <code class="text-secondary/70"></code>
+      </div>
+      <button class="w-full bg-primary text-on-primary font-bold py-3 rounded-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2" id="cart-install" onclick="installCart()">
+        <span class="material-symbols-outlined text-[20px]">terminal</span>
+        Install
+      </button>
+      <button class="w-full text-xs text-on-surface-variant/50 hover:text-on-surface-variant transition-all" onclick="clearCart()">Vaciar selección</button>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- Templates Section -->
+<section id="templates" class="py-40 px-margin-mobile md:px-margin-desktop max-w-4xl mx-auto reveal-on-scroll text-center">
+<h2 class="font-display-lg text-[48px] text-on-surface mb-6 font-black tracking-tight">Instant Project Generation</h2>
+<p class="text-on-surface-variant text-xl mb-16 opacity-70">Después de instalar tu stack, FastVibe puede generar tu proyecto base.</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">SaaS Starter</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">AI Agent</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">MCP Server</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">Next.js App</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">React + Vite</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">FastAPI</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">Express API</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">CLI Tool</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">Discord Bot</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">RAG Pipeline</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">LangGraph</div>
+<div class="glass p-5 rounded-2xl text-sm font-code-md text-on-surface-variant/80 hover:border-primary/30 transition-all">CrewAI</div>
+</div>
+</section>
+
+<!-- For Agents -->
+<section class="py-32 px-margin-mobile md:px-margin-desktop max-w-3xl mx-auto text-center reveal-on-scroll">
+<h2 class="font-display-lg text-[48px] text-on-surface mb-6 font-black tracking-tight">Built for <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">AI agents first</span></h2>
+<p class="text-on-surface-variant text-lg mb-12 opacity-70">Abrí FastVibe directamente desde tu agente de IA favorito.</p>
+<div class="relative inline-block">
+  <button id="agent-btn" class="bg-primary/10 text-primary font-code-md px-8 py-4 rounded-full hover:bg-primary/20 transition-all text-lg flex items-center gap-3 mx-auto" onclick="toggleAgentDropdown()">
+    <span class="material-symbols-outlined text-[24px]">terminal</span>
+    Abrir en...
+    <span class="material-symbols-outlined text-[20px]">expand_more</span>
+  </button>
+  <div id="agent-dropdown" class="agent-dropdown glass-dark rounded-2xl border border-white/10 p-2 z-50">
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="openAgent('https://chatgpt.com')"><span class="material-symbols-outlined text-primary text-[20px]">smart_toy</span>ChatGPT</button>
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="openAgent('https://claude.ai')"><span class="material-symbols-outlined text-secondary text-[20px]">psychology</span>Claude</button>
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="openAgent('https://gemini.google.com')"><span class="material-symbols-outlined text-tertiary text-[20px]">auto_awesome</span>Gemini</button>
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>Hermes (copy cmd)</button>
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>OpenCode (copy cmd)</button>
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>Atigravity (copy cmd)</button>
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>Codex (copy cmd)</button>
+  </div>
+</div>
+</section>
+
+<!-- Eco Marquee -->
+<section class="py-24 border-y border-white/5">
+<div class="max-w-4xl mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="text-center mb-16">
+<span class="text-on-surface-variant font-label-caps text-sm uppercase tracking-[0.3em] opacity-60">Orchestrating 30+ tools, not competing with them.</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">Py</div><span class="font-code-md text-sm text-on-surface">Python</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center font-bold text-secondary text-xs">Rs</div><span class="font-code-md text-sm text-on-surface">Rust</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-tertiary/10 flex items-center justify-center font-bold text-tertiary text-xs">Dk</div><span class="font-code-md text-sm text-on-surface">Docker</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">CC</div><span class="font-code-md text-sm text-on-surface">Claude Code</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center font-bold text-secondary text-xs">Cu</div><span class="font-code-md text-sm text-on-surface">Cursor</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-tertiary/10 flex items-center justify-center font-bold text-tertiary text-xs">Pg</div><span class="font-code-md text-sm text-on-surface">Postgres</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">Nd</div><span class="font-code-md text-sm text-on-surface">Node</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-tertiary/10 flex items-center justify-center font-bold text-tertiary text-xs">Ol</div><span class="font-code-md text-sm text-on-surface">Ollama</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">Go</div><span class="font-code-md text-sm text-on-surface">Go</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center font-bold text-secondary text-xs">Ts</div><span class="font-code-md text-sm text-on-surface">TypeScript</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-tertiary/10 flex items-center justify-center font-bold text-tertiary text-xs">Gi</div><span class="font-code-md text-sm text-on-surface">Git</span></div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-surface-container/30 border border-white/5 opacity-40 hover:opacity-60 transition-opacity cursor-default"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">Md</div><span class="font-code-md text-sm text-on-surface">MCP Servers</span></div>
+</div>
+</div>
+</section>
+
+<!-- Flow / Roadmap -->
+<section id="flow" class="py-48 px-margin-mobile md:px-margin-desktop max-w-5xl mx-auto reveal-on-scroll">
+<h2 class="font-display-lg text-[48px] text-center mb-6 font-black tracking-tight text-on-surface">El FastVibe Flow</h2>
+<p class="text-center text-on-surface-variant text-xl mb-20 opacity-70">Cuatro pasos. De cero a código en minutos.</p>
+
+<div class="relative">
+  <!-- Animated connecting line -->
+  <div class="hidden md:block absolute top-[44px] left-[calc(12.5%+10px)] right-[calc(12.5%+10px)] h-[3px] bg-white/5 rounded-full overflow-hidden">
+    <div class="h-full w-full bg-gradient-to-r from-secondary via-primary via-tertiary to-green-400 rounded-full flow-line-progress"></div>
+  </div>
+
+  <div class="flex flex-col md:flex-row items-start md:items-start gap-8 md:gap-0">
+    <!-- Step 1 -->
+    <div class="relative flex-1 md:px-4 flow-step group">
+      <div class="flex md:flex-col items-center md:items-center gap-4 md:gap-3">
+        <div class="relative z-10 w-[88px] h-[88px] rounded-2xl bg-secondary/10 border border-secondary/25 flex items-center justify-center flex-shrink-0 group-hover:border-secondary/50 group-hover:bg-secondary/20 transition-all duration-500">
+          <span class="material-symbols-outlined text-secondary text-4xl">terminal</span>
+          <div class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-secondary text-[10px] font-bold flex items-center justify-center text-black">1</div>
+        </div>
+        <div class="md:text-center">
+          <span class="font-label-caps text-[10px] text-secondary font-bold tracking-widest">STEP 1</span>
+          <h3 class="font-headline-md text-lg text-on-surface mt-1">Hacés curl</h3>
+          <p class="text-on-surface-variant/60 text-xs mt-1 leading-relaxed">Un solo comando.</p>
+          <code class="text-secondary font-code-md text-[10px] opacity-60 block mt-1">curl ... | bash</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile arrow -->
+    <div class="md:hidden flex justify-center w-full -my-2">
+      <div class="w-[2px] h-6 bg-gradient-to-b from-secondary/60 to-primary/60"></div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="relative flex-1 md:px-4 flow-step group">
+      <div class="flex md:flex-col items-center md:items-center gap-4 md:gap-3">
+        <div class="relative z-10 w-[88px] h-[88px] rounded-2xl bg-primary/10 border border-primary/25 flex items-center justify-center flex-shrink-0 group-hover:border-primary/50 group-hover:bg-primary/20 transition-all duration-500">
+          <span class="material-symbols-outlined text-primary text-4xl">layers</span>
+          <div class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary text-[10px] font-bold flex items-center justify-center text-black">2</div>
+        </div>
+        <div class="md:text-center">
+          <span class="font-label-caps text-[10px] text-primary font-bold tracking-widest">STEP 2</span>
+          <h3 class="font-headline-md text-lg text-on-surface mt-1">Elegís stack</h3>
+          <p class="text-on-surface-variant/60 text-xs mt-1 leading-relaxed">Vibecoder, AI Engineer,</p>
+          <p class="text-on-surface-variant/60 text-xs leading-relaxed">o tu combo custom.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile arrow -->
+    <div class="md:hidden flex justify-center w-full -my-2">
+      <div class="w-[2px] h-6 bg-gradient-to-b from-primary/60 to-tertiary/60"></div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="relative flex-1 md:px-4 flow-step group">
+      <div class="flex md:flex-col items-center md:items-center gap-4 md:gap-3">
+        <div class="relative z-10 w-[88px] h-[88px] rounded-2xl bg-tertiary/10 border border-tertiary/25 flex items-center justify-center flex-shrink-0 group-hover:border-tertiary/50 group-hover:bg-tertiary/20 transition-all duration-500">
+          <span class="material-symbols-outlined text-tertiary text-4xl">widgets</span>
+          <div class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-tertiary text-[10px] font-bold flex items-center justify-center text-black">3</div>
+        </div>
+        <div class="md:text-center">
+          <span class="font-label-caps text-[10px] text-tertiary font-bold tracking-widest">STEP 3</span>
+          <h3 class="font-headline-md text-lg text-on-surface mt-1">Elegís templates</h3>
+          <p class="text-on-surface-variant/60 text-xs mt-1 leading-relaxed">Proyecto base listo:</p>
+          <p class="text-on-surface-variant/60 text-xs leading-relaxed">SaaS, AI Agent, CLI, API.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile arrow -->
+    <div class="md:hidden flex justify-center w-full -my-2">
+      <div class="w-[2px] h-6 bg-gradient-to-b from-tertiary/60 to-green-400/60"></div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="relative flex-1 md:px-4 flow-step group">
+      <div class="flex md:flex-col items-center md:items-center gap-4 md:gap-3">
+        <div class="relative z-10 w-[88px] h-[88px] rounded-2xl bg-white/5 border border-white/15 flex items-center justify-center flex-shrink-0 group-hover:border-white/30 group-hover:bg-white/10 transition-all duration-500">
+          <span class="material-symbols-outlined text-on-surface text-4xl">rocket_launch</span>
+          <div class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white/40 text-[10px] font-bold flex items-center justify-center text-black">4</div>
+        </div>
+        <div class="md:text-center">
+          <span class="font-label-caps text-[10px] text-on-surface-variant font-bold tracking-widest">STEP 4</span>
+          <h3 class="font-headline-md text-lg text-on-surface mt-1">Empezás a trabajar</h3>
+          <p class="text-on-surface-variant/60 text-xs mt-1 leading-relaxed">Todo instalado y verificado.</p>
+          <p class="text-on-surface-variant/60 text-xs leading-relaxed">Listo para crear.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+    <div class="relative flex-1 md:px-6">
+      <div class="flex items-center gap-5">
+        <div class="relative z-10 w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-on-surface text-3xl">rocket_launch</span>
+        </div>
+        <div class="md:hidden">
+          <span class="font-label-caps text-[10px] text-on-surface-variant font-bold tracking-widest">STEP 4</span>
+          <h3 class="font-headline-md text-xl text-on-surface mt-1">Empezás a trabajar</h3>
+        </div>
+      </div>
+      <div class="hidden md:block text-center mt-4">
+        <span class="font-label-caps text-[10px] text-on-surface-variant font-bold tracking-widest">STEP 4</span>
+        <h3 class="font-headline-md text-lg text-on-surface mt-2">Empezás a trabajar</h3>
+        <p class="text-on-surface-variant/70 text-xs mt-2 leading-relaxed">Todo instalado y verificado.<br>Listo para crear.</p>
+      </div>
+    </div>
+  </div>
+
+  </div>
+</section>
+
+<!-- Quiz CTA -->
+<section class="py-32 px-margin-mobile md:px-margin-desktop max-w-3xl mx-auto text-center reveal-on-scroll">
+<h2 class="font-display-lg text-[48px] md:text-[56px] font-black text-on-surface leading-tight tracking-tighter mb-8">Don't know where to start?</h2>
+<p class="text-on-surface-variant text-lg mb-12 opacity-70">Respondé 5 preguntas y te armamos el stack ideal con herramientas extra.</p>
+
+<div id="quiz" class="glass rounded-[2rem] p-8 md:p-12 border-white/5">
+
+  <!-- Progress dots -->
+  <div class="flex justify-center gap-2 mb-10" id="quiz-progress">
+    <div class="w-8 h-1 rounded-full bg-primary/40 transition-all" data-step="0"></div>
+    <div class="w-8 h-1 rounded-full bg-white/10 transition-all" data-step="1"></div>
+    <div class="w-8 h-1 rounded-full bg-white/10 transition-all" data-step="2"></div>
+    <div class="w-8 h-1 rounded-full bg-white/10 transition-all" data-step="3"></div>
+    <div class="w-8 h-1 rounded-full bg-white/10 transition-all" data-step="4"></div>
+  </div>
+
+  <!-- Step counter -->
+  <span class="font-label-caps text-[10px] text-on-surface-variant/40 tracking-widest" id="quiz-step-label">1 / 5</span>
+
+  <!-- Question 1 -->
+  <div class="quiz-step" data-step="0">
+    <h3 class="font-headline-md text-2xl text-on-surface mb-8">¿Qué querés construir?</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="vibecoder" data-tools="" onclick="selectQuizOption(this, 0)">
+        <span class="material-symbols-outlined text-primary text-3xl block mb-3">rocket_launch</span>
+        <span class="font-bold text-on-surface">Todo / No sé</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Instalá todo y no te preocupes</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="ai-engineer" data-tools="ollama,claude-code" onclick="selectQuizOption(this, 0)">
+        <span class="material-symbols-outlined text-secondary text-3xl block mb-3">psychology</span>
+        <span class="font-bold text-on-surface">Apps con IA</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">LLMs locales, RAG, agents</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="frontend" data-tools="node,pnpm,bun,vscode" onclick="selectQuizOption(this, 0)">
+        <span class="material-symbols-outlined text-primary text-3xl block mb-3">javascript</span>
+        <span class="font-bold text-on-surface">Sitios web / Apps web</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">React, Next.js, Tailwind</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="data-science" data-tools="python,uv,jupyter" onclick="selectQuizOption(this, 0)">
+        <span class="material-symbols-outlined text-tertiary text-3xl block mb-3">analytics</span>
+        <span class="font-bold text-on-surface">Datos / Análisis</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Python, Jupyter, Polars</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="ai-agent-builder" data-tools="docker,ollama,claude-code" onclick="selectQuizOption(this, 0)">
+        <span class="material-symbols-outlined text-error text-3xl block mb-3">smart_toy</span>
+        <span class="font-bold text-on-surface">Agentes de IA</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">LangGraph, MCPs, Docker</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="backend" data-tools="node,python,go,postgres" onclick="selectQuizOption(this, 0)">
+        <span class="material-symbols-outlined text-on-surface-variant text-3xl block mb-3">dns</span>
+        <span class="font-bold text-on-surface">APIs / Backend</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Node, Python, Go, Rust</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 2 -->
+  <div class="quiz-step hidden" data-step="1">
+    <h3 class="font-headline-md text-2xl text-on-surface mb-8">¿Qué tan experto sos con la terminal?</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="vscode,git,node" onclick="selectQuizOption(this, 1)">
+        <span class="material-symbols-outlined text-primary text-3xl block mb-3">school</span>
+        <span class="font-bold text-on-surface">Nunca usé la terminal</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Guíame paso a paso</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="cursor,gh" onclick="selectQuizOption(this, 1)">
+        <span class="material-symbols-outlined text-secondary text-3xl block mb-3">psychology</span>
+        <span class="font-bold text-on-surface">Algo sé</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Pero quiero herramientas que me ayuden</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="cursor,claude-code,docker,ollama,gh" onclick="selectQuizOption(this, 1)">
+        <span class="material-symbols-outlined text-tertiary text-3xl block mb-3">bolt</span>
+        <span class="font-bold text-on-surface">Soy crack</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Dame el poder máximo</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 3 -->
+  <div class="quiz-step hidden" data-step="2">
+    <h3 class="font-headline-md text-2xl text-on-surface mb-8">¿Vas a usar IA para codear?</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="claude-code" onclick="selectQuizOption(this, 2)">
+        <span class="material-symbols-outlined text-primary text-3xl block mb-3">terminal</span>
+        <span class="font-bold text-on-surface">Sí, en la terminal</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Claude Code, Aider, Goose</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="continue" onclick="selectQuizOption(this, 2)">
+        <span class="material-symbols-outlined text-secondary text-3xl block mb-3">edit</span>
+        <span class="font-bold text-on-surface">Sí, en el editor</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Continue, Cursor AI, Copilot</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="ollama,lm-studio" onclick="selectQuizOption(this, 2)">
+        <span class="material-symbols-outlined text-tertiary text-3xl block mb-3">cloud_off</span>
+        <span class="font-bold text-on-surface">Sí, local / offline</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Ollama, LM Studio, modelos locales</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="" onclick="selectQuizOption(this, 2)">
+        <span class="material-symbols-outlined text-on-surface-variant text-3xl block mb-3">block</span>
+        <span class="font-bold text-on-surface">No por ahora</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Prefiero mantenerlo simple</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 4 -->
+  <div class="quiz-step hidden" data-step="3">
+    <h3 class="font-headline-md text-2xl text-on-surface mb-8">¿Necesitás contenedores / infraestructura?</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="docker" onclick="selectQuizOption(this, 3)">
+        <span class="material-symbols-outlined text-primary text-3xl block mb-3">docker</span>
+        <span class="font-bold text-on-surface">Sí, Docker</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Contenedores para desarrollo</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="docker" onclick="selectQuizOption(this, 3)">
+        <span class="material-symbols-outlined text-secondary text-3xl block mb-3">cloud</span>
+        <span class="font-bold text-on-surface">Sí, orquestación</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Docker + cloud deployment</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="" onclick="selectQuizOption(this, 3)">
+        <span class="material-symbols-outlined text-tertiary text-3xl block mb-3">block</span>
+        <span class="font-bold text-on-surface">No por ahora</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Arranco sin contenedores</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="docker" onclick="selectQuizOption(this, 3)">
+        <span class="material-symbols-outlined text-on-surface-variant text-3xl block mb-3">help</span>
+        <span class="font-bold text-on-surface">No sé</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Mejor tenerlo por las dudas</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 5 -->
+  <div class="quiz-step hidden" data-step="4">
+    <h3 class="font-headline-md text-2xl text-on-surface mb-8">¿Qué editor preferís?</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="vscode" onclick="selectQuizOption(this, 4)">
+        <span class="material-symbols-outlined text-primary text-3xl block mb-3">code</span>
+        <span class="font-bold text-on-surface">VS Code</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">El clásico de toda la vida</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="cursor" onclick="selectQuizOption(this, 4)">
+        <span class="material-symbols-outlined text-secondary text-3xl block mb-3">auto_fix</span>
+        <span class="font-bold text-on-surface">Cursor</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Editor AI-first</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="windsurf" onclick="selectQuizOption(this, 4)">
+        <span class="material-symbols-outlined text-tertiary text-3xl block mb-3">air</span>
+        <span class="font-bold text-on-surface">Windsurf</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">IDE AI-powered por Codeium</p>
+      </div>
+      <div class="quiz-option glass p-6 rounded-xl border border-white/5 cursor-pointer" data-stack="" data-tools="vscode" onclick="selectQuizOption(this, 4)">
+        <span class="material-symbols-outlined text-on-surface-variant text-3xl block mb-3">more_horiz</span>
+        <span class="font-bold text-on-surface">Me da igual</span>
+        <p class="text-xs text-on-surface-variant/60 mt-2">Elegí el estándar por mí</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav buttons -->
+  <div class="flex justify-between items-center mt-8">
+    <button class="text-sm text-on-surface-variant/40 hover:text-on-surface-variant transition-all" id="quiz-prev" onclick="prevQuizStep()">← Anterior</button>
+    <span class="text-xs text-on-surface-variant/30" id="quiz-step-label-bottom">Paso 1 de 5</span>
+    <button class="text-sm text-primary font-medium hover:text-primary/80 transition-all" id="quiz-next" onclick="nextQuizStep()">Siguiente →</button>
+  </div>
+
+  <!-- Result -->
+  <div id="quiz-result" class="hidden">
+    <div class="text-tertiary mb-4">
+      <span class="material-symbols-outlined text-4xl">check_circle</span>
+    </div>
+    <h3 class="font-headline-md text-2xl text-on-surface mb-2">¡Stack listo!</h3>
+    <p class="text-on-surface-variant/70 mb-2">Te recomendamos <strong class="text-primary" id="quiz-stack-name"></strong></p>
+    <p class="text-on-surface-variant/60 text-sm mb-2" id="quiz-stack-desc"></p>
+    <p class="text-on-surface-variant/50 text-xs mb-6">Con herramientas extra: <span class="text-secondary font-code-md" id="quiz-extra-tools"></span></p>
+    <div class="glass-dark rounded-xl p-4 font-code-md text-sm inline-flex items-center gap-4">
+      <code class="text-secondary" id="quiz-curl-cmd"></code>
+      <button class="text-on-surface-variant/40 hover:text-primary transition-all" onclick="copyToClipboard(document.getElementById('quiz-curl-cmd').textContent)">
+        <span class="material-symbols-outlined text-[20px]">content_copy</span>
+      </button>
+    </div>
+    <button class="mt-6 text-sm text-on-surface-variant/50 hover:text-on-surface-variant transition-all" onclick="resetQuiz()">Volver a empezar</button>
+  </div>
+</div>
+</section>
+
+<!-- Final CTA -->
+<section class="py-32 px-margin-mobile md:px-margin-desktop text-center reveal-on-scroll">
+<div class="max-w-4xl mx-auto space-y-12">
+<h2 class="font-display-lg text-[56px] md:text-[80px] font-black text-on-surface leading-tight tracking-tighter">One command and you're set.</h2>
+<div class="mx-auto max-w-2xl rounded-3xl glass-dark overflow-hidden border border-primary/20 glow-primary transition-all hover:scale-[1.02]">
+<div class="px-6 py-5 font-code-md flex items-center justify-between gap-4 bg-black/40">
+<code class="text-on-surface text-base"><span class="text-secondary/60">$</span> curl <span class="text-tertiary">https://fastvibe.dev/install</span> | <span class="text-primary">bash</span></code>
+<button class="text-on-surface-variant/40 hover:text-primary transition-all" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')">
+<span class="material-symbols-outlined text-[24px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-black w-full py-20 border-t border-white/5 mt-20 relative z-10">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-container-max mx-auto px-margin-desktop">
+<div class="space-y-8">
+<div class="font-display-lg text-4xl font-black text-on-surface">FastVibe</div>
+<p class="text-on-surface-variant font-body-md text-lg leading-relaxed max-w-sm opacity-60">© 2024 FastVibe. Open source. Built for the velocity age.</p>
+</div>
+<div class="flex flex-wrap gap-16 md:justify-end items-start">
+<div class="flex flex-col gap-6">
+<span class="font-label-caps text-xs text-primary font-black uppercase tracking-[0.2em]">Ecosystem</span>
+<a class="text-on-surface-variant/60 hover:text-white transition-all text-sm font-medium" href="#">Registry</a>
+<a class="text-on-surface-variant/60 hover:text-white transition-all text-sm font-medium" href="#">MCP Hub</a>
+<a class="text-on-surface-variant/60 hover:text-white transition-all text-sm font-medium" href="#">Templates</a>
+</div>
+<div class="flex flex-col gap-6">
+<span class="font-label-caps text-xs text-primary font-black uppercase tracking-[0.2em]">Social</span>
+<a class="text-on-surface-variant/60 hover:text-white transition-all text-sm font-medium" href="#">Discord</a>
+<a class="text-on-surface-variant/60 hover:text-white transition-all text-sm font-medium" href="#">GitHub</a>
+</div>
+</div>
+</div>
+</footer>
+
+<script>
+// Three.js Hero
+(function initHeroThree() {
+  const container = document.getElementById('hero-three-container');
+  if (!container) return;
+  const w = container.clientWidth, h = container.clientHeight;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(w, h); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.appendChild(renderer.domElement);
+  const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambient);
+  const pl = new THREE.PointLight(0xa855f7, 5, 20);
+  pl.position.set(2, 2, 2); scene.add(pl);
+  const geo = new THREE.IcosahedronGeometry(1.5, 0);
+  const wGeo = new THREE.IcosahedronGeometry(1.6, 1);
+  const mat = new THREE.MeshPhongMaterial({ color: 0xa855f7, emissive: 0x4c1d95, flatShading: true, shininess: 100, transparent: true, opacity: 0.9 });
+  const wMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, wireframe: true, transparent: true, opacity: 0.3 });
+  const core = new THREE.Mesh(geo, mat);
+  const shell = new THREE.Mesh(wGeo, wMat);
+  const group = new THREE.Group();
+  group.add(core); group.add(shell); scene.add(group);
+  camera.position.z = 5; camera.position.x = 1.5;
+  let scrollY = 0;
+  window.addEventListener('scroll', () => { scrollY = window.scrollY; });
+  const clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+    group.rotation.y = t * 0.3; group.rotation.x = t * 0.15;
+    const p = Math.sin(t * 1.5) * 0.05 + 1;
+    core.scale.set(p, p, p);
+    group.position.y = -scrollY * 0.002; group.rotation.z = scrollY * 0.0005;
+    renderer.render(scene, camera);
+  }
+  window.addEventListener('resize', () => {
+    const cw = container.clientWidth, ch = container.clientHeight;
+    camera.aspect = cw / ch; camera.updateProjectionMatrix(); renderer.setSize(cw, ch);
+  });
+  animate();
+})();
+
+// Reveal on scroll
+(function() {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); revealObserver.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal-on-scroll').forEach(el => revealObserver.observe(el));
+})();
+
+// Copy to clipboard
+function copyToClipboard(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).catch(() => {});
+  }
+}
+
+// Agent dropdown
+function toggleAgentDropdown() {
+  document.getElementById('agent-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#agent-btn') && !e.target.closest('#agent-dropdown')) {
+    document.getElementById('agent-dropdown').classList.remove('open');
+  }
+});
+function openAgent(url) {
+  window.open(url, '_blank');
+  document.getElementById('agent-dropdown').classList.remove('open');
+}
+
+// Tool data
+const TOOLS = [
+  { id: 'python', name: 'Python', cat: 'language', desc: 'Lenguaje de programación versátil. Usado para IA, backend, scripts, data science.' },
+  { id: 'node', name: 'Node.js', cat: 'language', desc: 'Runtime de JavaScript para backend, APIs, y herramientas CLI.' },
+  { id: 'java', name: 'Java', cat: 'language', desc: 'Lenguaje robusto para aplicaciones empresariales, Android y backend.' },
+  { id: 'go', name: 'Go', cat: 'language', desc: 'Lenguaje compilado rápido de Google. Ideal para CLIs, servidores, y cloud.' },
+  { id: 'rust', name: 'Rust', cat: 'language', desc: 'Lenguaje de sistemas seguro y rápido. Para tooling, WASM, y rendimiento crítico.' },
+  { id: 'dotnet', name: '.NET', cat: 'language', desc: 'Framework de Microsoft para apps web, desktop, y cloud con C#.' },
+  { id: 'bun', name: 'Bun', cat: 'language', desc: 'Runtime y bundler todo-en-uno para JS/TS. Más rápido que Node.' },
+  { id: 'deno', name: 'Deno', cat: 'language', desc: 'Runtime moderno de JS/TS con seguridad por defecto.' },
+  { id: 'npm', name: 'npm', cat: 'package_manager', desc: 'Gestor de paquetes de Node.js. Instalá librerías JS.' },
+  { id: 'pnpm', name: 'pnpm', cat: 'package_manager', desc: 'Alternativa rápida a npm con mejor uso de disco.' },
+  { id: 'yarn', name: 'Yarn', cat: 'package_manager', desc: 'Gestor de paquetes JS rápido y confiable.' },
+  { id: 'uv', name: 'uv', cat: 'package_manager', desc: 'Gestor de paquetes Python ultrarápido (reemplaza pip).' },
+  { id: 'pipx', name: 'pipx', cat: 'package_manager', desc: 'Instalá herramientas Python en entornos aislados.' },
+  { id: 'cargo', name: 'Cargo', cat: 'package_manager', desc: 'Gestor de paquetes y build system de Rust.' },
+  { id: 'claude-code', name: 'Claude Code', cat: 'ai_tool', desc: 'Asistente de codificación AI de Anthropic en la terminal.' },
+  { id: 'gemini-cli', name: 'Gemini CLI', cat: 'ai_tool', desc: 'Asistente AI de Google para la terminal.' },
+  { id: 'openai-cli', name: 'OpenAI CLI', cat: 'ai_tool', desc: 'CLI oficial de OpenAI para interactuar con GPT.' },
+  { id: 'ollama', name: 'Ollama', cat: 'ai_tool', desc: 'Ejecutá LLMs localmente (Llama, Mistral, etc.).' },
+  { id: 'lm-studio', name: 'LM Studio', cat: 'ai_tool', desc: 'App desktop para correr modelos locales con interfaz gráfica.' },
+  { id: 'continue', name: 'Continue', cat: 'ai_tool', desc: 'Asistente AI open-source para VS Code y JetBrains.' },
+  { id: 'aider', name: 'Aider', cat: 'ai_tool', desc: 'Pair programming con AI directo en la terminal.' },
+  { id: 'goose', name: 'Goose', cat: 'ai_tool', desc: 'Agente developer autónomo con capacidad de ejecutar código.' },
+  { id: 'crush', name: 'Crush', cat: 'ai_tool', desc: 'Agente de codificación AI para terminal.' },
+  { id: 'docker', name: 'Docker', cat: 'cli', desc: 'Contenedores. Imprescindible para entornos reproducibles.' },
+  { id: 'gh', name: 'GitHub CLI', cat: 'cli', desc: 'GitHub desde la terminal. PRs, issues, repos.' },
+  { id: 'git', name: 'Git', cat: 'cli', desc: 'Control de versiones. Lo esencial para cualquier proyecto.' },
+  { id: 'vscode', name: 'VS Code', cat: 'ide', desc: 'Editor de código más popular. Gratuito y extensible.' },
+  { id: 'cursor', name: 'Cursor', cat: 'ide', desc: 'Editor AI-first basado en VS Code con integración de modelos.' },
+  { id: 'windsurf', name: 'Windsurf', cat: 'ide', desc: 'IDE AI-powered por Codeium.' },
+];
+
+// Build tool list
+const cart = new Set();
+
+function renderTools() {
+  const list = document.getElementById('tool-list');
+  list.innerHTML = TOOLS.map(t => `
+    <div class="tool-item glass rounded-xl p-4 border border-white/5 ${cart.has(t.id) ? 'selected' : ''}" data-id="${t.id}" onclick="toggleTool('${t.id}')">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="font-medium text-on-surface text-sm">${t.name}</span>
+          <span class="text-[10px] font-code-md text-on-surface-variant/40 ml-2 uppercase">${t.cat.replace('_', ' ')}</span>
+        </div>
+        <span class="material-symbols-outlined text-[18px] ${cart.has(t.id) ? 'text-primary' : 'text-on-surface-variant/30'}">${cart.has(t.id) ? 'check_circle' : 'add_circle'}</span>
+      </div>
+      <div class="tool-desc ${cart.has(t.id) ? 'open' : ''}">
+        <p class="text-xs text-on-surface-variant/60 mt-2">${t.desc}</p>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('tool-count').textContent = `${TOOLS.length} herramientas`;
+  renderCart();
+}
+
+function toggleTool(id) {
+  if (cart.has(id)) cart.delete(id); else cart.add(id);
+  renderTools();
+}
+
+function renderCart() {
+  const items = document.getElementById('cart-items');
+  const empty = document.getElementById('cart-empty');
+  const actions = document.getElementById('cart-actions');
+  const count = document.getElementById('cart-count');
+
+  count.textContent = cart.size;
+
+  if (cart.size === 0) {
+    items.classList.add('hidden');
+    empty.classList.remove('hidden');
+    actions.classList.add('hidden');
+    return;
+  }
+
+  empty.classList.add('hidden');
+  items.classList.remove('hidden');
+  actions.classList.remove('hidden');
+
+  items.innerHTML = Array.from(cart).map(id => {
+    const t = TOOLS.find(x => x.id === id);
+    return `<div class="cart-item"><span class="text-sm text-on-surface">${t?.name || id}</span><button onclick="removeTool('${id}')" class="text-on-surface-variant/30 hover:text-error transition-all text-xs">✕</button></div>`;
+  }).join('');
+
+  const toolIds = Array.from(cart).join(',');
+  const url = toolIds.length > 0 ? `curl https://fastvibe.dev/install/custom?tools=${toolIds} | bash` : '';
+  document.querySelector('#cart-url code').textContent = url;
+}
+
+function removeTool(id) {
+  cart.delete(id);
+  renderTools();
+}
+
+function clearCart() {
+  cart.clear();
+  renderTools();
+}
+
+function installCart() {
+  if (cart.size === 0) return;
+  const toolIds = Array.from(cart).join(',');
+  const cmd = `curl https://fastvibe.dev/install/custom?tools=${toolIds} | bash`;
+  copyToClipboard(cmd);
+  const btn = document.getElementById('cart-install');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check</span> Copied!';
+  setTimeout(() => btn.innerHTML = orig, 2000);
+}
+
+renderTools();
+
+// Quiz — 5 preguntas
+const QUIZ_STACKS = {
+  'vibecoder': { name: 'Vibecoder', desc: '34 herramientas, MCPs, skills. Nunca sabés lo que vas a necesitar.', curl: 'curl https://fastvibe.dev/install | bash' },
+  'ai-engineer': { name: 'AI Engineer', desc: 'Python, Node, Ollama, Claude Code, Cursor, Docker, MCPs esenciales.', curl: 'curl https://fastvibe.dev/install/ai-engineer | bash' },
+  'frontend': { name: 'Frontend', desc: 'Node, pnpm, Bun, VS Code, Next.js, Tailwind. Todo para desarrollo web.', curl: 'curl https://fastvibe.dev/install/frontend | bash' },
+  'data-science': { name: 'Data Science', desc: 'Python, Jupyter, uv, Ollama, Docker, VS Code. Análisis y visualización.', curl: 'curl https://fastvibe.dev/install/data-science | bash' },
+  'ai-agent-builder': { name: 'AI Agent Builder', desc: 'LangGraph, FastAPI, Playwright, Docker, MCP SDKs. Creá agentes.', curl: 'curl https://fastvibe.dev/install/ai-agent-builder | bash' },
+  'backend': { name: 'Backend', desc: 'Python, Node, Go, Rust, Docker, PostgreSQL. APIs y servicios.', curl: 'curl https://fastvibe.dev/install/backend | bash' },
+};
+
+const TOOL_NAMES = Object.fromEntries(TOOLS.map(t => [t.id, t.name]));
+
+let quizCurrentStep = 0;
+let quizAnswers = [null, null, null, null, null];
+
+function selectQuizOption(el, step) {
+  const parent = el.closest('.quiz-step');
+  parent.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  quizAnswers[step] = {
+    stack: el.dataset.stack || '',
+    tools: el.dataset.tools ? el.dataset.tools.split(',') : [],
+  };
+}
+
+function nextQuizStep() {
+  if (!quizAnswers[quizCurrentStep]) return;
+  if (quizCurrentStep === 4) { showQuizResult(); return; }
+  document.querySelectorAll('.quiz-step')[quizCurrentStep].classList.add('hidden');
+  quizCurrentStep++;
+  document.querySelectorAll('.quiz-step')[quizCurrentStep].classList.remove('hidden');
+  updateQuizProgress();
+}
+
+function prevQuizStep() {
+  if (quizCurrentStep === 0) return;
+  document.querySelectorAll('.quiz-step')[quizCurrentStep].classList.add('hidden');
+  quizCurrentStep--;
+  document.querySelectorAll('.quiz-step')[quizCurrentStep].classList.remove('hidden');
+  updateQuizProgress();
+}
+
+function updateQuizProgress() {
+  document.getElementById('quiz-step-label').textContent = `${quizCurrentStep + 1} / 5`;
+  document.getElementById('quiz-step-label-bottom').textContent = `Paso ${quizCurrentStep + 1} de 5`;
+  document.querySelectorAll('#quiz-progress div').forEach((dot, i) => {
+    dot.className = `w-8 h-1 rounded-full transition-all ${i <= quizCurrentStep ? 'bg-primary/40' : 'bg-white/10'}`;
+  });
+}
+
+function showQuizResult() {
+  // Pick the best stack: last non-empty non-vibecoder stack, or vibecoder
+  let chosenStack = 'vibecoder';
+  for (let i = quizAnswers.length - 1; i >= 0; i--) {
+    const a = quizAnswers[i];
+    if (a && a.stack && a.stack !== 'vibecoder') { chosenStack = a.stack; break; }
+  }
+
+  // Collect all extra tools, deduplicate
+  const allTools = new Set();
+  // Start with the stack's default tools
+  for (const a of quizAnswers) {
+    if (a && a.tools.length) a.tools.forEach(t => allTools.add(t));
+  }
+
+  const stack = QUIZ_STACKS[chosenStack];
+  // Generate custom URL if tools differ from the profile URL
+  const toolList = Array.from(allTools);
+  const extraStr = toolList.length ? toolList.map(id => TOOL_NAMES[id] || id).join(', ') : 'ninguna';
+  const curlCmd = toolList.length
+    ? `curl https://fastvibe.dev/install/custom?tools=${toolList.join(',')} | bash`
+    : stack.curl;
+
+  document.getElementById('quiz-progress').classList.add('hidden');
+  document.getElementById('quiz-step-label').classList.add('hidden');
+  document.getElementById('quiz-step-label-bottom').classList.add('hidden');
+  document.getElementById('quiz-prev').classList.add('hidden');
+  document.getElementById('quiz-next').classList.add('hidden');
+  document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
+
+  document.getElementById('quiz-result').classList.remove('hidden');
+  document.getElementById('quiz-stack-name').textContent = stack.name;
+  document.getElementById('quiz-stack-desc').textContent = stack.desc;
+  document.getElementById('quiz-extra-tools').textContent = extraStr;
+  document.getElementById('quiz-curl-cmd').textContent = curlCmd;
+}
+
+function resetQuiz() {
+  quizCurrentStep = 0;
+  quizAnswers = [null, null, null, null, null];
+  document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('.quiz-step').forEach((s, i) => {
+    s.classList.toggle('hidden', i !== 0);
+  });
+  document.getElementById('quiz-result').classList.add('hidden');
+  document.getElementById('quiz-progress').classList.remove('hidden');
+  document.getElementById('quiz-step-label').classList.remove('hidden');
+  document.getElementById('quiz-step-label-bottom').classList.remove('hidden');
+  document.getElementById('quiz-prev').classList.remove('hidden');
+  document.getElementById('quiz-next').classList.remove('hidden');
+  updateQuizProgress();
+}
+</script>
+</body></html>

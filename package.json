@@ -1,0 +1,20 @@
+{
+  "name": "fastvibe-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "node packages/server/dist/index.js",
+    "build": "turbo build",
+    "start": "node packages/server/dist/index.js",
+    "clean": "turbo clean"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.4.0",
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.0"
+  },
+  "packageManager": "pnpm@10.8.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

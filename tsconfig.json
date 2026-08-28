@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@fastvibe/core": ["packages/core/src"],
+      "@fastvibe/installer": ["packages/installer/src"],
+      "@fastvibe/cli": ["packages/cli/src"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
