@@ -1,0 +1,85 @@
+name: Monthly tool version refresh
+
+on:
+  schedule:
+    # 1st of every month at 06:00 UTC
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+    inputs:
+      major:
+        description: 'Allow major version upgrades (review the PR before merging)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: tool-version-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Refresh pinned tool versions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Refresh pinned versions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALLOW_MAJOR: ${{ inputs.major }}
+        run: |
+          if [ "$ALLOW_MAJOR" = "true" ]; then
+            node scripts/update-versions.mjs --major --report=versions-report.md
+          else
+            node scripts/update-versions.mjs --report=versions-report.md
+          fi
+
+      - name: Validate build
+        run: pnpm build
+
+      - name: Write job summary
+        if: always()
+        run: |
+          if [ -f versions-report.md ]; then
+            cat versions-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Create or update pull request
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          add-paths: packages/core/src/versions.ts
+          branch: chore/tool-versions
+          delete-branch: true
+          commit-message: 'chore: monthly tool version refresh'
+          title: 'chore: monthly tool version refresh'
+          body-path: versions-report.md
+
+      - name: Enable auto-merge (squash)
+        if: steps.cpr.outputs.pull-request-number != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --squash --auto

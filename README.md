@@ -202,6 +202,49 @@ The production site runs at **https://fastvibe.onrender.com** as a Render Web Se
 
 ---
 
+## 🔄 Monthly tool version refresh
+
+Las versiones fijas de las herramientas (las que no instalan "latest" vía package manager) viven en un solo lugar: `packages/core/src/versions.ts`.
+
+El workflow `.github/workflows/update-tool-versions.yml` corre **el día 1 de cada mes a las 06:00 UTC** y:
+
+1. Consulta las fuentes oficiales de cada herramienta:
+   - Python → `endoflife.date/api/python` (espejo de python.org)
+   - Node.js → `nodejs.org/dist/index.json`
+   - Go → `go.dev/dl/?mode=json`
+   - .NET SDK → `dotnetcli` release metadata
+   - Git for Windows → GitHub Releases (`git-for-windows/git`)
+2. Verifica que la URL de descarga exista **antes** de fijarla (si da 404, mantiene la versión anterior).
+3. Actualiza `versions.ts`, corre `pnpm build` y abre/actualiza un PR en la rama `chore/tool-versions`.
+4. Intenta auto-merge (squash). Si el repo no lo permite, el PR queda para revisión.
+
+### Política de compatibilidad (sin conflictos)
+
+- Por defecto **solo sube patch/minor dentro de la misma línea**: Python `3.12.x`, Node `22.x`, Go `1.22.x`, .NET `8.0.x`, Git `2.x`.
+- Nunca aplica un salto de versión mayor automáticamente.
+- Ignora prereleases (alpha/beta/rc/dev).
+- Para Python baja al último patch que realmente tenga instalador `.exe` (los releases *security-only* no lo tienen).
+
+### Comandos manuales
+
+```bash
+pnpm versions:check    # muestra qué hay nuevo (exit 1 si hay updates)
+pnpm versions:update   # aplica las actualizaciones seguras
+pnpm versions:verify   # chequea además que las URLs sigan vivas
+```
+
+Para permitir saltos mayores (revisar el PR antes de mergear):
+
+```bash
+node scripts/update-versions.mjs --major
+```
+
+O desde GitHub → Actions → *Monthly tool version refresh* → **Run workflow** con `major = true`.
+
+> `java` y `lmstudio` quedan como revisión manual porque no exponen una API pública estable.
+
+---
+
 ## 📄 License
 
 MIT

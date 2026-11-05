@@ -1,4 +1,8 @@
 import type { Tool } from './types.js'
+import { VERSIONS } from './versions.js'
+
+const pythonMinor = VERSIONS.python.split('.').slice(0, 2).join('.')
+const nodeMajor = VERSIONS.node.split('.')[0]
 
 export const tools: Tool[] = [
   // ----- LANGUAGES -----
@@ -15,8 +19,8 @@ export const tools: Tool[] = [
       linux: [{ type: 'command', value: 'python3', args: ['--version'] }],
     },
     install: {
-      windows: [{ type: 'download', url: 'https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe', sudo: false }],
-      macos: [{ type: 'package_manager', packageManager: 'brew', packageName: 'python@3.12' }],
+      windows: [{ type: 'download', url: `https://www.python.org/ftp/python/${VERSIONS.python}/python-${VERSIONS.python}-amd64.exe`, sudo: false }],
+      macos: [{ type: 'package_manager', packageManager: 'brew', packageName: `python@${pythonMinor}` }],
       linux: [{ type: 'package_manager', packageManager: 'apt', packageName: 'python3 python3-pip', sudo: true }],
     },
     verify: [{ type: 'version_command', command: 'python', args: ['--version'] }, { type: 'version_command', command: 'python3', args: ['--version'] }],
@@ -35,9 +39,9 @@ export const tools: Tool[] = [
       linux: [{ type: 'command', value: 'node', args: ['--version'] }],
     },
     install: {
-      windows: [{ type: 'download', url: 'https://nodejs.org/dist/v22.0.0/node-v22.0.0-x64.msi' }],
+      windows: [{ type: 'download', url: `https://nodejs.org/dist/v${VERSIONS.node}/node-v${VERSIONS.node}-x64.msi` }],
       macos: [{ type: 'package_manager', packageManager: 'brew', packageName: 'node' }],
-      linux: [{ type: 'script', commands: ['curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -', 'sudo apt-get install -y nodejs'], sudo: true }],
+      linux: [{ type: 'script', commands: [`curl -fsSL https://deb.nodesource.com/setup_${nodeMajor}.x | sudo -E bash -`, 'sudo apt-get install -y nodejs'], sudo: true }],
     },
     verify: [{ type: 'version_command', command: 'node', args: ['--version'] }],
     recommended: true,
@@ -55,7 +59,7 @@ export const tools: Tool[] = [
       linux: [{ type: 'command', value: 'java', args: ['-version'] }],
     },
     install: {
-      windows: [{ type: 'download', url: 'https://download.oracle.com/java/22/latest/jdk-22_windows-x64_bin.msi' }],
+      windows: [{ type: 'download', url: `https://download.oracle.com/java/${VERSIONS.java}/latest/jdk-${VERSIONS.java}_windows-x64_bin.msi` }],
       macos: [{ type: 'package_manager', packageManager: 'brew', packageName: 'openjdk' }],
       linux: [{ type: 'package_manager', packageManager: 'apt', packageName: 'default-jdk', sudo: true }],
     },
@@ -74,9 +78,9 @@ export const tools: Tool[] = [
       linux: [{ type: 'command', value: 'go', args: ['version'] }],
     },
     install: {
-      windows: [{ type: 'download', url: 'https://go.dev/dl/go1.22.0.windows-amd64.msi' }],
+      windows: [{ type: 'download', url: `https://go.dev/dl/go${VERSIONS.go}.windows-amd64.msi` }],
       macos: [{ type: 'package_manager', packageManager: 'brew', packageName: 'go' }],
-      linux: [{ type: 'script', commands: ['wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz', 'sudo tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz'], sudo: true }],
+      linux: [{ type: 'script', commands: [`wget https://go.dev/dl/go${VERSIONS.go}.linux-amd64.tar.gz`, `sudo tar -C /usr/local -xzf go${VERSIONS.go}.linux-amd64.tar.gz`], sudo: true }],
     },
     verify: [{ type: 'version_command', command: 'go', args: ['version'] }],
   },
@@ -112,7 +116,7 @@ export const tools: Tool[] = [
       linux: [{ type: 'command', value: 'dotnet', args: ['--version'] }],
     },
     install: {
-      windows: [{ type: 'download', url: 'https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-8.0.200-windows-x64-installer' }],
+      windows: [{ type: 'download', url: `https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-${VERSIONS.dotnet}-windows-x64-installer` }],
       macos: [{ type: 'package_manager', packageManager: 'brew', packageName: 'dotnet' }],
       linux: [{ type: 'script', commands: ['wget https://dot.net/v1/dotnet-install.sh', 'chmod +x dotnet-install.sh', './dotnet-install.sh'], sudo: false }],
     },
@@ -377,8 +381,8 @@ export const tools: Tool[] = [
       linux: [{ type: 'command', value: 'lm-studio', args: ['--version'] }],
     },
     install: {
-      windows: [{ type: 'download', url: 'https://installers.lmstudio.ai/windows/LM-Studio-0.3.0-x64.exe' }],
-      macos: [{ type: 'download', url: 'https://installers.lmstudio.ai/mac/LM-Studio-0.3.0-arm64.dmg' }],
+      windows: [{ type: 'download', url: `https://installers.lmstudio.ai/windows/LM-Studio-${VERSIONS.lmstudio}-x64.exe` }],
+      macos: [{ type: 'download', url: `https://installers.lmstudio.ai/mac/LM-Studio-${VERSIONS.lmstudio}-arm64.dmg` }],
       linux: [{ type: 'script', commands: ['curl -fsSL https://lmstudio.ai/install.sh | sh'] }],
     },
     verify: [{ type: 'version_command', command: 'lm-studio', args: ['--version'] }],
@@ -593,7 +597,7 @@ export const tools: Tool[] = [
       linux: [{ type: 'command', value: 'git', args: ['--version'] }],
     },
     install: {
-      windows: [{ type: 'download', url: 'https://github.com/git-for-windows/git/releases/download/v2.45.0.windows.1/Git-2.45.0-64-bit.exe' }],
+      windows: [{ type: 'download', url: `https://github.com/git-for-windows/git/releases/download/v${VERSIONS.gitWindowsRelease}/Git-${VERSIONS.gitWindows}-64-bit.exe` }],
       macos: [{ type: 'package_manager', packageManager: 'brew', packageName: 'git' }],
       linux: [{ type: 'package_manager', packageManager: 'apt', packageName: 'git', sudo: true }],
     },

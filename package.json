@@ -5,7 +5,10 @@
     "dev": "node packages/server/dist/index.js",
     "build": "turbo build",
     "start": "node packages/server/dist/index.js",
-    "clean": "turbo clean"
+    "clean": "turbo clean",
+    "versions:update": "node scripts/update-versions.mjs",
+    "versions:check": "node scripts/update-versions.mjs --check",
+    "versions:verify": "node scripts/update-versions.mjs --check --verify-urls"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
