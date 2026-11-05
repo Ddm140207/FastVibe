@@ -3,7 +3,7 @@
 // The monthly GitHub Action (.github/workflows/update-tool-versions.yml) does this automatically.
 export const VERSIONS = {
   "python": "3.12.10",
-  "node": "22.23.4",
+  "node": "22.23.3",
   "java": "21.0.13",
   "javaBuild": "9",
   "go": "1.22.12",
