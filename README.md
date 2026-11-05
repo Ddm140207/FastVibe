@@ -2,9 +2,13 @@
 
 # ⚡ FastVibe
 
+[![Live site](https://img.shields.io/badge/live-fastvibe.onrender.com-8b5cf6?style=flat-square)](https://fastvibe.onrender.com)
+
 ### From zero to AI-ready in one click.
 
 The fastest way to start **vibe coding**. A single `curl` command installs your entire dev environment — languages, AI tools, MCP servers, IDEs, and project templates.
+
+**🌐 Live:** https://fastvibe.onrender.com
 
 </div>
 
@@ -15,26 +19,26 @@ The fastest way to start **vibe coding**. A single `curl` command installs your 
 Install the everything-included **Vibecoder** stack with one command:
 
 ```bash
-curl https://fastvibe.dev/install | bash
+curl https://fastvibe.onrender.com/install | bash
 ```
 
 Or choose a specific stack:
 
 ```bash
-curl https://fastvibe.dev/install/ai-engineer | bash
-curl https://fastvibe.dev/install/frontend | bash
-curl https://fastvibe.dev/install/data-science | bash
-curl https://fastvibe.dev/install/ai-agent-builder | bash
-curl https://fastvibe.dev/install/backend | bash
-curl https://fastvibe.dev/install/devops | bash
-curl https://fastvibe.dev/install/fullstack | bash
-curl https://fastvibe.dev/install/minimal | bash
+curl https://fastvibe.onrender.com/install/ai-engineer | bash
+curl https://fastvibe.onrender.com/install/frontend | bash
+curl https://fastvibe.onrender.com/install/data-science | bash
+curl https://fastvibe.onrender.com/install/ai-agent-builder | bash
+curl https://fastvibe.onrender.com/install/backend | bash
+curl https://fastvibe.onrender.com/install/devops | bash
+curl https://fastvibe.onrender.com/install/fullstack | bash
+curl https://fastvibe.onrender.com/install/minimal | bash
 ```
 
 Or build your own custom combo:
 
 ```bash
-curl "https://fastvibe.dev/install/custom?tools=python,node,ollama" | bash
+curl "https://fastvibe.onrender.com/install/custom?tools=python,node,ollama" | bash
 ```
 
 > 🔥 **Tip:** Once installed, ask your favorite AI agent (Claude, ChatGPT, Gemini, Codex…) to run FastVibe for you — it's built for AI-first workflows.
@@ -63,7 +67,7 @@ curl "https://fastvibe.dev/install/custom?tools=python,node,ollama" | bash
 - **Pre-configured AI ecosystem** — Claude Code, Gemini CLI, Ollama, Cursor, and more, wired up and ready.
 - **MCP servers included** — Filesystem, GitHub, Memory, Postgres, Browser connectors pre-configured.
 - **Isolated environments** — Uses `uv` and `pipx` to avoid conflicting Python/Node versions.
-- **Custom picker** — Choose exactly the tools you need via the [web picker](https://fastvibe.dev/#picker).
+- **Custom picker** — Choose exactly the tools you need via the [web picker](https://fastvibe.onrender.com/#picker).
 - **Cross-platform** — Works on macOS, Linux, and Windows (WSL/Git Bash).
 - **Verification built-in** — Every tool is verified after installation, with clear progress output.
 - **Instant project templates** — SaaS, AI Agent, MCP Server, Next.js, FastAPI, CLI, RAG, LangGraph, CrewAI, and more.
@@ -181,6 +185,20 @@ export const myTool: Tool = {
 ```
 
 Add the tool's `id` to any profile's `tools` array in `packages/core/src/profiles.ts` to include it in that stack.
+
+---
+
+## ☁️ Deploy on Render
+
+The production site runs at **https://fastvibe.onrender.com** as a Render Web Service:
+
+| Setting | Value |
+|---------|-------|
+| Build command | `pnpm install && pnpm build` |
+| Start command | `pnpm start` |
+| Environment | `PUBLIC_URL=https://fastvibe.onrender.com` (optional, this is the default) |
+
+`PORT` is provided by Render automatically. The server serves the landing page, the install scripts, and the assets (favicons, OG image, manifest, robots, sitemap) from `packages/website`.
 
 ---
 

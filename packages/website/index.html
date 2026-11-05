@@ -2,7 +2,68 @@
 <html class="dark" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>FastVibe | From zero to AI-ready in one click</title>
+<title>FastVibe — From zero to AI-ready in one click</title>
+<meta name="description" content="FastVibe instala todo tu entorno de desarrollo con un solo comando curl: lenguajes, AI tools, MCP servers, IDEs y project templates. De cero a AI-ready en un click."/>
+<meta name="keywords" content="FastVibe, vibe coding, dev environment setup, curl install, AI tools, MCP servers, Claude Code, Cursor, Ollama, developer tooling, one click setup"/>
+<meta name="author" content="FastVibe"/>
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1"/>
+<meta name="theme-color" content="#111318"/>
+<meta name="color-scheme" content="dark"/>
+<link rel="canonical" href="https://fastvibe.onrender.com/"/>
+
+<!-- Icons & PWA -->
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+<link rel="manifest" href="/site.webmanifest"/>
+<meta name="application-name" content="FastVibe"/>
+<meta name="apple-mobile-web-app-title" content="FastVibe"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+<!-- Open Graph (link preview) -->
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="FastVibe"/>
+<meta property="og:url" content="https://fastvibe.onrender.com/"/>
+<meta property="og:title" content="FastVibe — From zero to AI-ready in one click"/>
+<meta property="og:description" content="Un comando curl instala todo tu entorno: lenguajes, AI tools, MCPs, IDEs y project templates. De cero a AI-ready en un click."/>
+<meta property="og:image" content="https://fastvibe.onrender.com/og-image.png"/>
+<meta property="og:image:type" content="image/png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="FastVibe — From zero to AI-ready in one click. curl https://fastvibe.onrender.com/install | bash"/>
+<meta property="og:locale" content="es_AR"/>
+<meta property="og:locale:alternate" content="en_US"/>
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="FastVibe — From zero to AI-ready in one click"/>
+<meta name="twitter:description" content="Un comando curl instala todo tu entorno: lenguajes, AI tools, MCPs, IDEs y project templates."/>
+<meta name="twitter:image" content="https://fastvibe.onrender.com/og-image.png"/>
+<meta name="twitter:image:alt" content="FastVibe — From zero to AI-ready in one click"/>
+<meta name="twitter:url" content="https://fastvibe.onrender.com/"/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="preconnect" href="https://cdn.tailwindcss.com"/>
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com"/>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "FastVibe",
+  "url": "https://fastvibe.onrender.com/",
+  "description": "One curl command installs your entire dev environment: languages, AI tools, MCP servers, IDEs and project templates.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "macOS, Linux, Windows",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "image": "https://fastvibe.onrender.com/og-image.png",
+  "logo": "https://fastvibe.onrender.com/icon-512.png"
+}
+</script>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Geist:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -71,6 +132,8 @@ tailwind.config = {
 </script>
 <style>
 body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
+html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 6rem; }
 .glass { background: rgba(15, 18, 25, 0.4); backdrop-filter: blur(20px); border: 1px solid rgba(152, 141, 159, 0.1); }
 .glass-dark { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.05); }
 .glow-primary { box-shadow: 0 0 30px rgba(168, 85, 247, 0.15); }
@@ -112,26 +175,40 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
 
 <!-- TopNavBar -->
 <header class="fixed top-0 w-full z-50 bg-background/30 backdrop-blur-xl border-b border-white/5">
-<div class="flex justify-between items-center max-w-container-max mx-auto px-margin-desktop h-20">
-<div class="font-display-lg text-[28px] md:text-display-lg font-black tracking-tighter text-primary">FastVibe</div>
-<nav class="hidden md:flex items-center gap-12">
+<div class="flex justify-between items-center gap-4 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop h-20">
+<a href="/" class="flex items-center gap-3 group shrink-0" aria-label="FastVibe — inicio">
+<img src="/favicon.svg" alt="" width="40" height="40" class="w-9 h-9 md:w-10 md:h-10 rounded-xl shadow-[0_0_24px_rgba(183,109,255,0.28)] transition-transform duration-300 group-hover:scale-105"/>
+<span class="font-display-lg text-[26px] md:text-[30px] font-black tracking-tighter text-on-surface">Fast<span class="text-primary">Vibe</span></span>
+</a>
+<nav class="hidden md:flex items-center gap-10">
 <a class="text-on-surface-variant font-medium hover:text-primary transition-all duration-300" href="#stacks">Stacks</a>
 <a class="text-on-surface-variant font-medium hover:text-primary transition-all duration-300" href="#picker">Picker</a>
 <a class="text-on-surface-variant font-medium hover:text-primary transition-all duration-300" href="#flow">Flow</a>
 </nav>
-<div class="flex items-center gap-6">
-<a href="https://github.com/fastvibe/fastvibe" class="hidden sm:block text-on-surface/80 font-medium hover:text-white transition-all">GitHub</a>
+<div class="flex items-center gap-4">
+<div class="hidden xl:flex items-center gap-2 rounded-full border border-white/10 bg-black/40 pl-4 pr-1.5 py-1.5 font-code-md text-[12px] text-on-surface-variant" title="Comando de instalación">
+<span class="text-tertiary">$</span>
+<code class="text-secondary/80 whitespace-nowrap">curl fastvibe.onrender.com/install | bash</code>
+<button class="text-on-surface-variant/50 hover:text-primary transition-all active:scale-90 p-1" aria-label="Copiar comando de instalación" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install | bash')">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<a href="https://github.com/Ddm140207/FastVibe" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center gap-2 text-on-surface/80 font-medium hover:text-white transition-all" aria-label="FastVibe en GitHub">
+<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.07.78 2.16v3.2c0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/></svg>
+<span class="hidden lg:inline">GitHub</span>
+</a>
+<a href="#picker" class="inline-flex items-center gap-2 rounded-full bg-primary text-on-primary font-bold text-[13px] md:text-sm px-4 py-2 md:px-5 md:py-2.5 hover:brightness-110 transition-all active:scale-95">Instalar</a>
 </div>
 </div>
 </header>
 
 <main>
 <!-- Hero -->
-<section class="relative px-margin-mobile md:px-margin-desktop min-h-screen flex items-center overflow-hidden">
+<section class="relative px-margin-mobile md:px-margin-desktop min-h-screen flex items-start overflow-hidden pt-32 md:pt-36 pb-24">
 <div id="hero-three-container"></div>
 <div class="relative z-10 max-w-container-max mx-auto w-full">
 <div class="max-w-4xl space-y-10">
-<h1 class="font-display-lg text-[64px] md:text-[110px] leading-[0.9] font-black tracking-tighter text-on-surface">
+<h1 class="font-display-lg text-[56px] md:text-[84px] lg:text-[100px] xl:text-[110px] leading-[0.9] font-black tracking-tighter text-on-surface">
   From zero to <br/>
   <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary via-primary to-secondary bg-[length:200%_auto] animate-gradient-x">AI-ready</span> <br/>
   in one click.
@@ -152,9 +229,9 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
 </div>
 <div class="p-8 text-left font-code-md text-lg flex items-center justify-between group hero-terminal">
 <code class="text-secondary/90">
-<span class="text-tertiary">curl</span> https://fastvibe.dev/install | <span class="text-primary">bash</span>
+<span class="text-tertiary">curl</span> https://fastvibe.onrender.com/install | <span class="text-primary">bash</span>
 </code>
-<button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')">
+<button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install | bash')">
 <span class="material-symbols-outlined text-[24px]">content_copy</span>
 </button>
 </div>
@@ -243,8 +320,8 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
       </div>
       <div class="flex-shrink-0 w-full lg:w-auto">
         <div class="glass-dark rounded-xl border border-white/10 p-4 font-code-md text-sm flex items-center justify-between gap-4">
-          <code class="text-secondary/80 whitespace-nowrap">curl <span class="text-tertiary">https://fastvibe.dev/install</span> | bash</code>
-          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')">
+          <code class="text-secondary/80 whitespace-nowrap">curl <span class="text-tertiary">https://fastvibe.onrender.com/install</span> | bash</code>
+          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install | bash')">
             <span class="material-symbols-outlined text-[20px]">content_copy</span>
           </button>
         </div>
@@ -273,8 +350,8 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
       </div>
       <div class="flex-shrink-0 w-full lg:w-auto">
         <div class="glass-dark rounded-xl border border-white/10 p-4 font-code-md text-sm flex items-center justify-between gap-4">
-          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.dev/install/ai-engineer</span> | bash</code>
-          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install/ai-engineer | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
+          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.onrender.com/install/ai-engineer</span> | bash</code>
+          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install/ai-engineer | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
         </div>
       </div>
     </div>
@@ -299,8 +376,8 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
       </div>
       <div class="flex-shrink-0 w-full lg:w-auto">
         <div class="glass-dark rounded-xl border border-white/10 p-4 font-code-md text-sm flex items-center justify-between gap-4">
-          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.dev/install/frontend</span> | bash</code>
-          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install/frontend | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
+          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.onrender.com/install/frontend</span> | bash</code>
+          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install/frontend | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
         </div>
       </div>
     </div>
@@ -325,8 +402,8 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
       </div>
       <div class="flex-shrink-0 w-full lg:w-auto">
         <div class="glass-dark rounded-xl border border-white/10 p-4 font-code-md text-sm flex items-center justify-between gap-4">
-          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.dev/install/ai-agent-builder</span> | bash</code>
-          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install/ai-agent-builder | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
+          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.onrender.com/install/ai-agent-builder</span> | bash</code>
+          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install/ai-agent-builder | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
         </div>
       </div>
     </div>
@@ -351,8 +428,8 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
       </div>
       <div class="flex-shrink-0 w-full lg:w-auto">
         <div class="glass-dark rounded-xl border border-white/10 p-4 font-code-md text-sm flex items-center justify-between gap-4">
-          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.dev/install/data-science</span> | bash</code>
-          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.dev/install/data-science | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
+          <code class="text-secondary/80">curl <span class="text-tertiary">https://fastvibe.onrender.com/install/data-science</span> | bash</code>
+          <button class="text-on-surface-variant/40 hover:text-primary transition-all active:scale-90" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install/data-science | bash')"><span class="material-symbols-outlined text-[20px]">content_copy</span></button>
         </div>
       </div>
     </div>
@@ -365,8 +442,8 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
       <h3 class="font-headline-md text-xl text-on-surface mb-2">Backend</h3>
       <p class="text-on-surface-variant/70 text-sm mb-4">Node.js, Python, Go, Rust, Docker, PostgreSQL</p>
       <div class="glass-dark rounded-xl border border-white/10 p-3 font-code-md text-xs flex items-center justify-between gap-2">
-        <code class="text-secondary/70 truncate">curl <span class="text-tertiary">https://fastvibe.dev/install/backend</span> | bash</code>
-        <button class="text-on-surface-variant/40 hover:text-primary transition-all" onclick="copyToClipboard('curl https://fastvibe.dev/install/backend | bash')"><span class="material-symbols-outlined text-[18px]">content_copy</span></button>
+        <code class="text-secondary/70 truncate">curl <span class="text-tertiary">https://fastvibe.onrender.com/install/backend</span> | bash</code>
+        <button class="text-on-surface-variant/40 hover:text-primary transition-all" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install/backend | bash')"><span class="material-symbols-outlined text-[18px]">content_copy</span></button>
       </div>
     </div>
     <div class="glass p-8 rounded-[2rem] border-white/5 hover:border-white/20 transition-all group">
@@ -374,8 +451,8 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
       <h3 class="font-headline-md text-xl text-on-surface mb-2">DevOps</h3>
       <p class="text-on-surface-variant/70 text-sm mb-4">Docker, Git, GitHub CLI, Python, Node, Go</p>
       <div class="glass-dark rounded-xl border border-white/10 p-3 font-code-md text-xs flex items-center justify-between gap-2">
-        <code class="text-secondary/70 truncate">curl <span class="text-tertiary">https://fastvibe.dev/install/devops</span> | bash</code>
-        <button class="text-on-surface-variant/40 hover:text-primary transition-all" onclick="copyToClipboard('curl https://fastvibe.dev/install/devops | bash')"><span class="material-symbols-outlined text-[18px]">content_copy</span></button>
+        <code class="text-secondary/70 truncate">curl <span class="text-tertiary">https://fastvibe.onrender.com/install/devops</span> | bash</code>
+        <button class="text-on-surface-variant/40 hover:text-primary transition-all" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install/devops | bash')"><span class="material-symbols-outlined text-[18px]">content_copy</span></button>
       </div>
     </div>
   </div>
@@ -469,10 +546,10 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
     <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="openAgent('https://chatgpt.com')"><span class="material-symbols-outlined text-primary text-[20px]">smart_toy</span>ChatGPT</button>
     <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="openAgent('https://claude.ai')"><span class="material-symbols-outlined text-secondary text-[20px]">psychology</span>Claude</button>
     <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="openAgent('https://gemini.google.com')"><span class="material-symbols-outlined text-tertiary text-[20px]">auto_awesome</span>Gemini</button>
-    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>Hermes (copy cmd)</button>
-    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>OpenCode (copy cmd)</button>
-    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>Atigravity (copy cmd)</button>
-    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>Codex (copy cmd)</button>
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>Hermes (copy cmd)</button>
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>OpenCode (copy cmd)</button>
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>Atigravity (copy cmd)</button>
+    <button class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install | bash')"><span class="material-symbols-outlined text-on-surface-variant text-[20px]">code</span>Codex (copy cmd)</button>
   </div>
 </div>
 </section>
@@ -806,8 +883,8 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
 <h2 class="font-display-lg text-[56px] md:text-[80px] font-black text-on-surface leading-tight tracking-tighter">One command and you're set.</h2>
 <div class="mx-auto max-w-2xl rounded-3xl glass-dark overflow-hidden border border-primary/20 glow-primary transition-all hover:scale-[1.02]">
 <div class="px-6 py-5 font-code-md flex items-center justify-between gap-4 bg-black/40">
-<code class="text-on-surface text-base"><span class="text-secondary/60">$</span> curl <span class="text-tertiary">https://fastvibe.dev/install</span> | <span class="text-primary">bash</span></code>
-<button class="text-on-surface-variant/40 hover:text-primary transition-all" onclick="copyToClipboard('curl https://fastvibe.dev/install | bash')">
+<code class="text-on-surface text-base"><span class="text-secondary/60">$</span> curl <span class="text-tertiary">https://fastvibe.onrender.com/install</span> | <span class="text-primary">bash</span></code>
+<button class="text-on-surface-variant/40 hover:text-primary transition-all" onclick="copyToClipboard('curl https://fastvibe.onrender.com/install | bash')">
 <span class="material-symbols-outlined text-[24px]">content_copy</span>
 </button>
 </div>
@@ -820,8 +897,12 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
 <footer class="bg-black w-full py-20 border-t border-white/5 mt-20 relative z-10">
 <div class="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-container-max mx-auto px-margin-desktop">
 <div class="space-y-8">
-<div class="font-display-lg text-4xl font-black text-on-surface">FastVibe</div>
-<p class="text-on-surface-variant font-body-md text-lg leading-relaxed max-w-sm opacity-60">© 2024 FastVibe. Open source. Built for the velocity age.</p>
+<a href="/" class="flex items-center gap-3 w-fit group" aria-label="FastVibe — inicio">
+<img src="/favicon.svg" alt="" width="52" height="52" class="w-12 h-12 rounded-2xl shadow-[0_0_30px_rgba(183,109,255,0.25)] transition-transform duration-300 group-hover:scale-105"/>
+<span class="font-display-lg text-4xl font-black text-on-surface">Fast<span class="text-primary">Vibe</span></span>
+</a>
+<p class="text-on-surface-variant font-body-md text-lg leading-relaxed max-w-sm opacity-60">© 2026 FastVibe. Open source. Built for the velocity age.</p>
+<a href="https://fastvibe.onrender.com" class="inline-block font-code-md text-sm text-secondary/70 hover:text-secondary transition-all">fastvibe.onrender.com</a>
 </div>
 <div class="flex flex-wrap gap-16 md:justify-end items-start">
 <div class="flex flex-col gap-6">
@@ -833,7 +914,7 @@ body { background-color: #050505; color: #e2e2e8; overflow-x: hidden; }
 <div class="flex flex-col gap-6">
 <span class="font-label-caps text-xs text-primary font-black uppercase tracking-[0.2em]">Social</span>
 <a class="text-on-surface-variant/60 hover:text-white transition-all text-sm font-medium" href="#">Discord</a>
-<a class="text-on-surface-variant/60 hover:text-white transition-all text-sm font-medium" href="#">GitHub</a>
+<a class="text-on-surface-variant/60 hover:text-white transition-all text-sm font-medium" href="https://github.com/Ddm140207/FastVibe" target="_blank" rel="noopener noreferrer">GitHub</a>
 </div>
 </div>
 </div>
@@ -997,7 +1078,7 @@ function renderCart() {
   }).join('');
 
   const toolIds = Array.from(cart).join(',');
-  const url = toolIds.length > 0 ? `curl https://fastvibe.dev/install/custom?tools=${toolIds} | bash` : '';
+  const url = toolIds.length > 0 ? `curl https://fastvibe.onrender.com/install/custom?tools=${toolIds} | bash` : '';
   document.querySelector('#cart-url code').textContent = url;
 }
 
@@ -1014,7 +1095,7 @@ function clearCart() {
 function installCart() {
   if (cart.size === 0) return;
   const toolIds = Array.from(cart).join(',');
-  const cmd = `curl https://fastvibe.dev/install/custom?tools=${toolIds} | bash`;
+  const cmd = `curl https://fastvibe.onrender.com/install/custom?tools=${toolIds} | bash`;
   copyToClipboard(cmd);
   const btn = document.getElementById('cart-install');
   const orig = btn.innerHTML;
@@ -1026,12 +1107,12 @@ renderTools();
 
 // Quiz — 5 preguntas
 const QUIZ_STACKS = {
-  'vibecoder': { name: 'Vibecoder', desc: '34 herramientas, MCPs, skills. Nunca sabés lo que vas a necesitar.', curl: 'curl https://fastvibe.dev/install | bash' },
-  'ai-engineer': { name: 'AI Engineer', desc: 'Python, Node, Ollama, Claude Code, Cursor, Docker, MCPs esenciales.', curl: 'curl https://fastvibe.dev/install/ai-engineer | bash' },
-  'frontend': { name: 'Frontend', desc: 'Node, pnpm, Bun, VS Code, Next.js, Tailwind. Todo para desarrollo web.', curl: 'curl https://fastvibe.dev/install/frontend | bash' },
-  'data-science': { name: 'Data Science', desc: 'Python, Jupyter, uv, Ollama, Docker, VS Code. Análisis y visualización.', curl: 'curl https://fastvibe.dev/install/data-science | bash' },
-  'ai-agent-builder': { name: 'AI Agent Builder', desc: 'LangGraph, FastAPI, Playwright, Docker, MCP SDKs. Creá agentes.', curl: 'curl https://fastvibe.dev/install/ai-agent-builder | bash' },
-  'backend': { name: 'Backend', desc: 'Python, Node, Go, Rust, Docker, PostgreSQL. APIs y servicios.', curl: 'curl https://fastvibe.dev/install/backend | bash' },
+  'vibecoder': { name: 'Vibecoder', desc: '34 herramientas, MCPs, skills. Nunca sabés lo que vas a necesitar.', curl: 'curl https://fastvibe.onrender.com/install | bash' },
+  'ai-engineer': { name: 'AI Engineer', desc: 'Python, Node, Ollama, Claude Code, Cursor, Docker, MCPs esenciales.', curl: 'curl https://fastvibe.onrender.com/install/ai-engineer | bash' },
+  'frontend': { name: 'Frontend', desc: 'Node, pnpm, Bun, VS Code, Next.js, Tailwind. Todo para desarrollo web.', curl: 'curl https://fastvibe.onrender.com/install/frontend | bash' },
+  'data-science': { name: 'Data Science', desc: 'Python, Jupyter, uv, Ollama, Docker, VS Code. Análisis y visualización.', curl: 'curl https://fastvibe.onrender.com/install/data-science | bash' },
+  'ai-agent-builder': { name: 'AI Agent Builder', desc: 'LangGraph, FastAPI, Playwright, Docker, MCP SDKs. Creá agentes.', curl: 'curl https://fastvibe.onrender.com/install/ai-agent-builder | bash' },
+  'backend': { name: 'Backend', desc: 'Python, Node, Go, Rust, Docker, PostgreSQL. APIs y servicios.', curl: 'curl https://fastvibe.onrender.com/install/backend | bash' },
 };
 
 const TOOL_NAMES = Object.fromEntries(TOOLS.map(t => [t.id, t.name]));
@@ -1094,7 +1175,7 @@ function showQuizResult() {
   const toolList = Array.from(allTools);
   const extraStr = toolList.length ? toolList.map(id => TOOL_NAMES[id] || id).join(', ') : 'ninguna';
   const curlCmd = toolList.length
-    ? `curl https://fastvibe.dev/install/custom?tools=${toolList.join(',')} | bash`
+    ? `curl https://fastvibe.onrender.com/install/custom?tools=${toolList.join(',')} | bash`
     : stack.curl;
 
   document.getElementById('quiz-progress').classList.add('hidden');

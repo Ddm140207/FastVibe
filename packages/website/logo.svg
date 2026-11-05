@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FastVibe logo">
+  <defs>
+    <linearGradient id="fv-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c1e24"/>
+      <stop offset="1" stop-color="#0a0c10"/>
+    </linearGradient>
+    <radialGradient id="fv-glow" cx="50%" cy="62%" r="62%">
+      <stop offset="0" stop-color="#b76dff" stop-opacity=".38"/>
+      <stop offset="1" stop-color="#b76dff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fv-bolt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#78ecff"/>
+      <stop offset="1" stop-color="#b76dff"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#fv-bg)"/>
+  <rect width="512" height="512" rx="116" fill="url(#fv-glow)"/>
+  <rect x="8" y="8" width="496" height="496" rx="108" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="4"/>
+  <path d="M316 40 128 296h104l-36 176 196-264H280z" fill="url(#fv-bolt)"/>
+</svg>

@@ -6,22 +6,38 @@ import { generateBashScript } from '@fastvibe/scripts'
 
 const registry = new Registry()
 const PORT = parseInt(process.env.PORT || '3000', 10)
+const PUBLIC_URL = (process.env.PUBLIC_URL || 'https://fastvibe.onrender.com').replace(/\/$/, '')
 const WWW_DIR = resolve(import.meta.dirname, '../../website')
 
 const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+  '.xml': 'application/xml; charset=utf-8',
   '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
   '.ico': 'image/x-icon',
   '.svg': 'image/svg+xml',
+  '.woff2': 'font/woff2',
 }
+
+const CACHEABLE = new Set(['.css', '.js', '.png', '.jpg', '.jpeg', '.webp', '.ico', '.svg', '.woff2', '.webmanifest', '.txt', '.xml'])
 
 function serveFile(res: ServerResponse, filePath: string): void {
   const ext = extname(filePath)
   try {
     const content = readFileSync(filePath)
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' })
+    const headers: Record<string, string> = { 'Content-Type': MIME[ext] || 'application/octet-stream' }
+    // Hashed assets aren't used yet, so keep a short cache for images and no-cache for HTML.
+    headers['Cache-Control'] = CACHEABLE.has(ext)
+      ? 'public, max-age=3600, stale-while-revalidate=86400'
+      : 'no-cache'
+    res.writeHead(200, headers)
     res.end(content)
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain' })
@@ -89,7 +105,7 @@ function serveApiProfiles(res: ServerResponse): void {
     toolCount: p.tools.length,
     mcpCount: p.mcps.length,
     skillCount: p.skills.length,
-    installUrl: `https://fastvibe.dev/install/${p.id}`,
+    installUrl: `${PUBLIC_URL}/install/${p.id}`,
   }))
   res.writeHead(200, { 'Content-Type': 'application/json' })
   res.end(JSON.stringify(data, null, 2))
@@ -122,6 +138,13 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
   const filePath = resolve(WWW_DIR, path.slice(1))
   if (filePath.startsWith(WWW_DIR) && existsSync(filePath)) {
     return serveFile(res, filePath)
+  }
+
+  // Missing static assets (images, icons, manifest, sitemap…) are real 404s.
+  if (extname(path)) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' })
+    res.end('Not found')
+    return
   }
 
   // Fallback to index.html (SPA-friendly)

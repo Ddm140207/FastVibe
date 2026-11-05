@@ -63,7 +63,7 @@ export class Registry {
   }
 
   async fetchRemoteRegistry(url?: string): Promise<void> {
-    // Future: fetch from fastvibe.dev/registry
+    // Future: fetch from fastvibe.onrender.com/registry
     // For now, all tools are built-in
   }
 }
