@@ -218,6 +218,8 @@ El workflow `.github/workflows/update-tool-versions.yml` corre **el día 1 de ca
 3. Actualiza `versions.ts`, corre `pnpm build` y abre/actualiza un PR en la rama `chore/tool-versions`.
 4. Intenta auto-merge (squash). Si el repo no lo permite, el PR queda para revisión.
 
+> **Configuración única del repo:** en GitHub → *Settings → Actions → General → Workflow permissions*, activá **“Allow GitHub Actions to create and approve pull requests”**. Para que el auto-merge funcione, activá también *Settings → General → Allow auto-merge*. Sin esos permisos el workflow corre y actualiza la rama, pero no puede abrir el PR.
+
 ### Política de compatibilidad (sin conflictos)
 
 - Por defecto **solo sube patch/minor dentro de la misma línea**: Python `3.12.x`, Node `22.x`, Go `1.22.x`, .NET `8.0.x`, Git `2.x`.
