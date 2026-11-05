@@ -75,9 +75,22 @@ jobs:
           title: 'chore: monthly tool version refresh'
           body-path: versions-report.md
 
-      - name: Enable auto-merge (squash)
+      - name: Merge the version PR
         if: steps.cpr.outputs.pull-request-number != ''
-        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --squash --auto
+        run: |
+          N="${{ steps.cpr.outputs.pull-request-number }}"
+          for i in 1 2 3 4 5; do
+            # Preferred: queue auto-merge (respects branch protection/checks).
+            if gh pr merge "$N" --squash --auto; then
+              exit 0
+            fi
+            # Fallback: auto-merge is disabled on the repo, merge immediately.
+            if gh pr merge "$N" --squash --delete-branch; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "No se pudo mergear el PR #$N; queda abierto para revisión." >&2
+          exit 1
