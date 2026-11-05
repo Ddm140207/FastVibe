@@ -214,6 +214,8 @@ El workflow `.github/workflows/update-tool-versions.yml` corre **el día 1 de ca
    - Go → `go.dev/dl/?mode=json`
    - .NET SDK → `dotnetcli` release metadata
    - Git for Windows → GitHub Releases (`git-for-windows/git`)
+   - Java → Adoptium Temurin releases (`adoptium/temurin{21,25}-binaries`)
+   - LM Studio → redirect estable `lmstudio.ai/download/latest/...` (siempre última versión)
 2. Verifica que la URL de descarga exista **antes** de fijarla (si da 404, mantiene la versión anterior).
 3. Actualiza `versions.ts`, corre `pnpm build` y abre/actualiza un PR en la rama `chore/tool-versions`.
 4. Intenta auto-merge (squash). Si el repo no lo permite, el PR queda para revisión.
@@ -222,7 +224,7 @@ El workflow `.github/workflows/update-tool-versions.yml` corre **el día 1 de ca
 
 ### Política de compatibilidad (sin conflictos)
 
-- Por defecto **solo sube patch/minor dentro de la misma línea**: Python `3.12.x`, Node `22.x`, Go `1.22.x`, .NET `8.0.x`, Git `2.x`.
+- Por defecto **solo sube patch/minor dentro de la misma línea**: Python `3.12.x`, Node `22.x`, Go `1.22.x`, .NET `8.0.x`, Git `2.x`, Java `21.x` (Temurin LTS).
 - Nunca aplica un salto de versión mayor automáticamente.
 - Ignora prereleases (alpha/beta/rc/dev).
 - Para Python baja al último patch que realmente tenga instalador `.exe` (los releases *security-only* no lo tienen).
@@ -243,7 +245,7 @@ node scripts/update-versions.mjs --major
 
 O desde GitHub → Actions → *Monthly tool version refresh* → **Run workflow** con `major = true`.
 
-> `java` y `lmstudio` quedan como revisión manual porque no exponen una API pública estable.
+> Java se instala desde **Adoptium Temurin 21 LTS** (la URL de Oracle JDK 22 ya no existe). LM Studio usa un redirect estable, así que no necesita pin. Ambas URLs se verifican en cada corrida.
 
 ---
 

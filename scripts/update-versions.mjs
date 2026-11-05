@@ -220,6 +220,26 @@ async function latestGitWindows(current) {
   return null
 }
 
+async function latestJava(current) {
+  const feature = ALLOW_MAJOR ? await latestLtsJavaFeature() : majorOf(current)
+  const release = await getJson(
+    `https://api.github.com/repos/adoptium/temurin${feature}-binaries/releases/latest`,
+  )
+  const pattern = new RegExp(
+    `^OpenJDK${feature}U-jdk_x64_windows_hotspot_(\\d+\\.\\d+\\.\\d+)_(\\d+)\\.msi$`,
+  )
+  for (const asset of release.assets ?? []) {
+    const match = asset.name.match(pattern)
+    if (match) return { version: match[1], build: match[2] }
+  }
+  return null
+}
+
+async function latestLtsJavaFeature() {
+  const info = await getJson('https://api.adoptium.net/v3/info/available_releases')
+  return String(Math.max(...(info.available_lts_releases ?? [21])))
+}
+
 // ---------------------------------------------------------------------------
 // URL verification
 // ---------------------------------------------------------------------------
@@ -228,6 +248,9 @@ function pinnedUrls(v) {
   return {
     python: [`https://www.python.org/ftp/python/${v.python}/python-${v.python}-amd64.exe`],
     node: [`https://nodejs.org/dist/v${v.node}/node-v${v.node}-x64.msi`],
+    java: [
+      `https://github.com/adoptium/temurin${majorOf(v.java)}-binaries/releases/download/jdk-${v.java}%2B${v.javaBuild}/OpenJDK${majorOf(v.java)}U-jdk_x64_windows_hotspot_${v.java}_${v.javaBuild}.msi`,
+    ],
     go: [
       `https://go.dev/dl/go${v.go}.windows-amd64.msi`,
       `https://go.dev/dl/go${v.go}.linux-amd64.tar.gz`,
@@ -235,10 +258,26 @@ function pinnedUrls(v) {
     dotnet: [
       `https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-${v.dotnet}-windows-x64-installer`,
     ],
-    lmstudio: [`https://installers.lmstudio.ai/windows/LM-Studio-${v.lmstudio}-x64.exe`],
     git: [
       `https://github.com/git-for-windows/git/releases/download/v${v.gitWindowsRelease}/Git-${v.gitWindows}-64-bit.exe`,
     ],
+  }
+}
+
+async function verifyRedirects(rows) {
+  const statics = [
+    ['LM Studio (Windows)', 'https://lmstudio.ai/download/latest/win32/x64'],
+    ['LM Studio (macOS)', 'https://lmstudio.ai/download/latest/darwin/arm64'],
+  ]
+  for (const [label, url] of statics) {
+    const res = await checkUrl(url)
+    rows.push({
+      tool: label,
+      from: 'latest',
+      to: 'latest',
+      status: res.ok ? 'redirect ok' : `error: URL ${res.status || 'timeout'}`,
+      source: 'lmstudio.ai/download',
+    })
   }
 }
 
@@ -267,8 +306,7 @@ const TOOLS = [
   { id: 'go', label: 'Go', source: 'go.dev/dl', pinned: true, fetch: latestGo },
   { id: 'dotnet', label: '.NET SDK', source: 'dotnetcli release-metadata', pinned: true, fetch: latestDotnet },
   { id: 'git', label: 'Git for Windows', source: 'github/git-for-windows releases', pinned: true, fetch: latestGitWindows },
-  { id: 'java', label: 'Java', source: 'oracle.com/java (URL "latest")', pinned: false, manual: true },
-  { id: 'lmstudio', label: 'LM Studio', source: 'lmstudio.ai (sin API pública)', pinned: false, manual: true },
+  { id: 'java', label: 'Java (Temurin)', source: 'github/adoptium temurin releases', pinned: true, fetch: latestJava },
 ]
 
 async function main() {
@@ -283,7 +321,12 @@ async function main() {
       continue
     }
 
-    const before = tool.id === 'git' ? current.gitWindows : current[tool.id]
+    const before =
+      tool.id === 'git'
+        ? current.gitWindows
+        : tool.id === 'java'
+          ? `${current.java}+${current.javaBuild}`
+          : current[tool.id]
     try {
       const result = await tool.fetch(before)
       if (!result) {
@@ -301,6 +344,19 @@ async function main() {
           tool: tool.label,
           from: current.gitWindows,
           to: result.version,
+          status: changed ? 'actualizado' : 'al día',
+          source: tool.source,
+        })
+      } else if (tool.id === 'java') {
+        const changed = result.version !== current.java || result.build !== current.javaBuild
+        if (changed) {
+          next.java = result.version
+          next.javaBuild = result.build
+        }
+        rows.push({
+          tool: tool.label,
+          from: `${current.java}+${current.javaBuild}`,
+          to: `${result.version}+${result.build}`,
           status: changed ? 'actualizado' : 'al día',
           source: tool.source,
         })
@@ -323,7 +379,6 @@ async function main() {
   // Verify every candidate URL before writing. A dead link is never pinned.
   if (VERIFY_URLS) {
     for (const [key, urls] of Object.entries(pinnedUrls(next))) {
-      if (key === 'lmstudio') continue // manual, best effort
       for (const url of urls) {
         const res = await checkUrl(url)
         const row = rows.find((r) => r.tool === (TOOLS.find((t) => t.id === key)?.label ?? key))
@@ -332,6 +387,9 @@ async function main() {
           if (key === 'git') {
             next.gitWindows = current.gitWindows
             next.gitWindowsRelease = current.gitWindowsRelease
+          } else if (key === 'java') {
+            next.java = current.java
+            next.javaBuild = current.javaBuild
           } else if (key in current) {
             next[key] = current[key]
           }
@@ -341,10 +399,17 @@ async function main() {
         }
       }
     }
+    await verifyRedirects(rows)
   }
 
-  const changes = Object.keys(current).filter((k) => current[k] !== next[k])
-  const rendered = renderVersions(next)
+  delete next.lmstudio
+
+  const keys = [...new Set([...Object.keys(current), ...Object.keys(next)])]
+  const changes = keys.filter((k) => current[k] !== next[k])
+  const ORDER = ['python', 'node', 'java', 'javaBuild', 'go', 'dotnet', 'gitWindows', 'gitWindowsRelease']
+  const rendered = renderVersions(
+    Object.fromEntries(ORDER.filter((k) => next[k] !== undefined).map((k) => [k, next[k]])),
+  )
 
   if (!CHECK_ONLY && changes.length > 0) {
     await writeFile(VERSIONS_FILE, rendered, 'utf8')
@@ -388,7 +453,7 @@ function toMarkdown(rows, changes, current, next) {
     for (const key of changes) lines.push(`- \`${key}\`: \`${current[key]}\` → \`${next[key]}\``)
   }
   lines.push('')
-  lines.push('> Las versiones manuales (`java`, `lmstudio`) se revisan a mano porque no exponen una API estable.')
+  lines.push('> `java` se pinnea desde Adoptium Temurin LTS y `lmstudio` usa un redirect estable a la última versión. Ambas URLs se verifican en cada corrida.')
   return lines.join('\n')
 }
 

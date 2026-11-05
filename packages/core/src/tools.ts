@@ -3,6 +3,7 @@ import { VERSIONS } from './versions.js'
 
 const pythonMinor = VERSIONS.python.split('.').slice(0, 2).join('.')
 const nodeMajor = VERSIONS.node.split('.')[0]
+const javaFeature = VERSIONS.java.split('.')[0]
 
 export const tools: Tool[] = [
   // ----- LANGUAGES -----
@@ -51,7 +52,7 @@ export const tools: Tool[] = [
     name: 'Java',
     description: 'General-purpose programming language',
     category: 'language',
-    homepage: 'https://openjdk.org',
+    homepage: 'https://adoptium.net',
     tags: ['language', 'runtime', 'jvm'],
     detection: {
       windows: [{ type: 'command', value: 'java', args: ['-version'] }],
@@ -59,7 +60,7 @@ export const tools: Tool[] = [
       linux: [{ type: 'command', value: 'java', args: ['-version'] }],
     },
     install: {
-      windows: [{ type: 'download', url: `https://download.oracle.com/java/${VERSIONS.java}/latest/jdk-${VERSIONS.java}_windows-x64_bin.msi` }],
+      windows: [{ type: 'download', url: `https://github.com/adoptium/temurin${javaFeature}-binaries/releases/download/jdk-${VERSIONS.java}%2B${VERSIONS.javaBuild}/OpenJDK${javaFeature}U-jdk_x64_windows_hotspot_${VERSIONS.java}_${VERSIONS.javaBuild}.msi` }],
       macos: [{ type: 'package_manager', packageManager: 'brew', packageName: 'openjdk' }],
       linux: [{ type: 'package_manager', packageManager: 'apt', packageName: 'default-jdk', sudo: true }],
     },
@@ -381,8 +382,8 @@ export const tools: Tool[] = [
       linux: [{ type: 'command', value: 'lm-studio', args: ['--version'] }],
     },
     install: {
-      windows: [{ type: 'download', url: `https://installers.lmstudio.ai/windows/LM-Studio-${VERSIONS.lmstudio}-x64.exe` }],
-      macos: [{ type: 'download', url: `https://installers.lmstudio.ai/mac/LM-Studio-${VERSIONS.lmstudio}-arm64.dmg` }],
+      windows: [{ type: 'download', url: 'https://lmstudio.ai/download/latest/win32/x64' }],
+      macos: [{ type: 'download', url: 'https://lmstudio.ai/download/latest/darwin/arm64' }],
       linux: [{ type: 'script', commands: ['curl -fsSL https://lmstudio.ai/install.sh | sh'] }],
     },
     verify: [{ type: 'version_command', command: 'lm-studio', args: ['--version'] }],
